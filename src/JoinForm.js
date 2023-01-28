@@ -1,6 +1,10 @@
 import React from 'react';
 
+import TextField from "@mui/material/TextField";
+
 class JoinForm extends React.Component {
+              //<input type="text" value={id} onChange={this.handleChange}
+                     //placeholder="or enter Join Code" />
     constructor(props) {
         super(props);
 
@@ -15,10 +19,11 @@ class JoinForm extends React.Component {
         const { id } = this.props;
 
         return(
-              <input type="text" value={id} onChange={this.handleChange}
-                     placeholder="or enter Join Code" />
+            <TextField variant="outlined"
+            id="join-code" label="Join Code" onChange={this.handleChange} />
         )
     }
 }
 
-export default JoinForm
+export default JoinForm;
+

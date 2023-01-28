@@ -1,12 +1,14 @@
 import React from "react";
 
+import PreGame from "./PreGame.js";
+import NoGame from "./NoGame.js";
+import LoadingGame from "./LoadingGame.js";
+
 function GameDisplay(props) {
     const { status } = props;
-        return (
-            <div className="App">
-              { status === null ? "loading..." :
-              status ? "game Exists" : "no game found" }
-            </div>);
+
+    return status === null ? <LoadingGame /> :
+        status ? <PreGame /> : <NoGame />
 }
 
 export default GameDisplay;

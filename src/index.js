@@ -10,15 +10,12 @@ import './style.css';
 
 import App from './App';
 import Join from './Join';
-import Game, { loader as gameLoader } from './Game';
+import Game, { gameLoader } from './Game';
 import New from './New';
 import Home from './Home';
 import Setup from './Setup';
 
 import ErrorPage from './ErrorPage';
-
-//import reportWebVitals from './reportWebVitals';
-
 
 const RequireAuth: FC<{ children: React.ReactElement }> = ({ children }) => {
     const userIsLogged = localStorage.getItem('name');
@@ -47,6 +44,7 @@ const router = createBrowserRouter([
                       <Game />
                     </RequireAuth>
                 ,
+                loader: gameLoader,
             },
             {
                 path: "join",
