@@ -1,11 +1,24 @@
 import { createServer } from 'http';
 import express from 'express';
+import GameDB from "./GameDB.js";
+import cors from "cors";
+
+import cookieParser from "cookie-parser"
 
 export default function HttpServer() {
     const expressApp = express();
 
-    expressApp.get('/', (req, res) => {
-        res.sendFile(__dirname + '/index.html');
+    expressApp.use(cookieParser());
+
+    expressApp.use(cors({
+        origin: 'http://localhost:8080'
+    }));
+
+    expressApp.post('/api/game', (req, res) => {
+        let id = GameDB.create();
+        console.log("create a new game: ", id);
+
+        res.json({ id: id });
     });
 
     const server = createServer(expressApp);
