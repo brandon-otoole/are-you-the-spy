@@ -40,13 +40,13 @@ export default function SocketServer(httpServer) {
     wss.on('connection', function connection(ws) {
         console.log("...connecting...");
 
-        const playerAddEvent = {
-            type: "addPlayer",
-            data: {
-                name: "Jerry Jager"
-            },
-        };
-        //ws.send(JSON.stringify(playerAddEvent));
+        // on connection, create a sessionId. store it here and in the db
+        let gameId;
+        let sessionId = crypto.randomBytes(16).toString('hex');
+
+        GameDB.addSession(sessionId, ws);
+
+
 
 
         ws.on('message', function message(e) {
@@ -57,7 +57,8 @@ export default function SocketServer(httpServer) {
 
                 switch (msg.type) {
                     case "join":
-                        const granted = GameDB.contains(msg.data.gameId);
+                        gameId = msg.data.gameId;
+                        const granted = GameDB.join(gameId, sessionId);
 
                         sendJoinResult(ws, granted);
 
@@ -67,11 +68,16 @@ export default function SocketServer(httpServer) {
 
                         break;
 
-                    case "imready":
+                    case "imReady":
+                        // do this to all players in a room/game
                         sendPlayerReadyStatus(ws, msg.data.name, true);
                         break;
-                    case "imnotready":
+                    case "imNotReady":
+                        // do this to all players in a room/game
                         sendPlayerReadyStatus(ws, msg.data.name, false);
+                        break;
+                    case "playerNotReady":
+                        // set a player to not ready
                         break;
                     case "asdf":
                         break;

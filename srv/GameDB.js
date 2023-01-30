@@ -5,10 +5,13 @@ import fs, { promises as fsPromises } from "fs";
 
 class GameDB {
     constructor() {
+        this.sessions = {};
+        this.users = {};
     }
 
     create() {
         let id = crypto.randomBytes(3).toString('hex');
+        // TODO: make sure that this id doesn't exist already
 
         game_records[id] = {};
 
@@ -28,7 +31,35 @@ class GameDB {
 
         console.log(data);
 
+        // TODO: delete all session inormation and close all sockets
+
         await fsPromises.writeFile("./game_records.js", data);
+    }
+
+    join(gameId, sessionId) {
+        if (!this.contains(gameId)) { return false; }
+
+        let game = game_records[gameId]
+
+        game.players = game.players || new Set();
+        game.players.add(sessionId);
+
+        return true;
+    }
+
+    addSession(id, socket){
+        this.sessions[id] = socket;
+    }
+
+    getSession(id){
+        return this.sessions[id];
+    }
+
+    getPlayerIds(gameId) {
+        let players = [];
+        if (!this.contains(gameId)) { return players }
+
+        // get the players
     }
 }
 
