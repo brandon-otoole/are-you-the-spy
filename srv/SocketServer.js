@@ -86,11 +86,6 @@ export default function SocketServer(httpServer) {
                     case "1234":
                         break;
                 }
-
-                if (msg.type === "join") {
-                } else if (msg.type === "setReady") {
-                } else if (msg.type === "setNotReady") {
-                }
             } catch (e) {
                 console.log(e);
                 console.log("data not in json format: ", e);
