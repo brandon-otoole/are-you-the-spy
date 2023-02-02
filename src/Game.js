@@ -12,7 +12,7 @@ import NoGame from "./NoGame.js";
 import LoadingGame from "./LoadingGame.js";
 
 export function gameLoader(params) {
-    let ws = new WebSocket("ws://127.0.0.1:3000");
+    let ws = new WebSocket("ws://127.0.0.1:3000/ws");
 
     return { ws: ws };
 }
@@ -53,7 +53,6 @@ function Game(props) {
     }, [ ready ]);
 
     useBeforeUnload(wsCleanup);
-
 
     if (gameExists === null) {
         return <LoadingGame />;

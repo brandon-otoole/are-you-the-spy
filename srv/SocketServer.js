@@ -1,5 +1,6 @@
 import { WebSocketServer } from "ws";
 import GameDB from "./GameDB.js";
+import crypto from "crypto";
 
 // TODO: This needs to be upgraded to track connections per room, track who is
 //       connected with which ws and who has joined which rooms
@@ -35,19 +36,28 @@ function sendEliminatePlayer(ws, playerId) {
 
 export default function SocketServer(httpServer) {
     console.log("...setting up the socket server... ");
-    const wss = new WebSocketServer({ server:httpServer })
+    const wss = new WebSocketServer({ server:httpServer, path:"/ws" })
 
-    wss.on('connection', function connection(ws) {
-        console.log("...connecting...");
+    //wss.on('upgrade', function() {
+        //console.log("upgrade");
+    //});
+
+    wss.on('headers', function(headers, req) {
+        //console.log("req:");
+        //console.log(req);
+        //console.log("headers");
+        console.log(headers, req);
+    });
+
+    wss.on('connection', function connection(ws, req) {
+        console.log("...connecting...:", req.headers, req.cookie);
+        console.log("...connecting...:");
 
         // on connection, create a sessionId. store it here and in the db
         let gameId;
         let sessionId = crypto.randomBytes(16).toString('hex');
 
         GameDB.addSession(sessionId, ws);
-
-
-
 
         ws.on('message', function message(e) {
             console.log('received: "%s"', e);
