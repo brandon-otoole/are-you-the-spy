@@ -36,23 +36,10 @@ function sendEliminatePlayer(ws, playerId) {
 
 export default function SocketServer(httpServer) {
     console.log("...setting up the socket server... ");
-    const wss = new WebSocketServer({ server:httpServer, path:"/ws" })
+    const wss = new WebSocketServer({ noServer: true });
 
-    //wss.on('upgrade', function() {
-        //console.log("upgrade");
-    //});
-
-    wss.on('headers', function(headers, req) {
-        //console.log("req:");
-        //console.log(req);
-        //console.log("headers");
-        console.log(headers, req);
-    });
-
-    wss.on('connection', function connection(ws, req) {
-        console.log("...connecting...:", req.headers, req.cookie);
-        console.log("...connecting...:");
-
+    wss.on('connection', function connection(ws, req, userId) {
+        console.log("userId: ", userId);
         // on connection, create a sessionId. store it here and in the db
         let gameId;
         let sessionId = crypto.randomBytes(16).toString('hex');
@@ -103,4 +90,21 @@ export default function SocketServer(httpServer) {
 
         });
     });
+
+    httpServer.on('upgrade', function upgrade(req, socket, head) {
+        let userId = getUserId(req.headers.cookie);
+
+        wss.handleUpgrade(req, socket, head, function done(ws) {
+            wss.emit('connection', ws, req, userId);
+        });
+    });
+
+    function getUserId(cookieString){
+        for (let cookie of cookieString.split(';')) {
+            const [name, value] = cookie.split('=');
+            if (name === 'userId') {
+                return value;
+            }
+        }
+    }
 }

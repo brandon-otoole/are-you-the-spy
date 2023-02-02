@@ -12,7 +12,7 @@ import NoGame from "./NoGame.js";
 import LoadingGame from "./LoadingGame.js";
 
 export function gameLoader(params) {
-    let ws = new WebSocket("ws://127.0.0.1:3000/ws");
+    let ws = new WebSocket("ws://spygame.lan/ws");
 
     return { ws: ws };
 }
