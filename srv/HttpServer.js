@@ -30,7 +30,22 @@ export default function HttpServer() {
         res.json({ login: true });
     });
 
-    expressApp.post('/api/game', (req, res) => {
+    expressApp.put('/game/:id', (req, res) => {
+        let gameId = req.params.id;
+
+        // clean up any existing state for this user
+
+        // close and remove all sockets for this user
+        // OR send them all a MOVE command
+
+        // join the user to the game
+
+
+
+        res.json({ join: true });
+    });
+
+    expressApp.post('/game', (req, res) => {
         let id = GameDB.create();
         console.log("create a new game: ", id);
 

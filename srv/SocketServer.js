@@ -1,6 +1,6 @@
 import { WebSocketServer } from "ws";
 import GameDB from "./GameDB.js";
-import crypto from "crypto";
+import SessionStore from "./SessionStore.js";
 
 // TODO: This needs to be upgraded to track connections per room, track who is
 //       connected with which ws and who has joined which rooms
@@ -28,68 +28,29 @@ function sendPlayerReadyStatus(ws, playerId, ready) {
     }));
 }
 
-function sendStartGame(ws) {
+function joinGame(ws, gameId, sessionId, userId, name) {
+    // you must try to unjoin from the last game if present
+    GameDB.unjoin(sessionId);
+
+    // try to join the requested game
+    const granted = GameDB.join(userId, gameId, sessionId, name);
+
+    // respond on the socket with the join results
+    // TODO: make sure to send the full state
+    sendJoinResult(ws, granted);
+
+    // let everyone in the room know that you joined
+    if (granted) {
+        sendAddPlayer(ws, msg.data)
+    }
 }
 
-function sendEliminatePlayer(ws, playerId) {
-}
 
 export default function SocketServer(httpServer) {
     console.log("...setting up the socket server... ");
     const wss = new WebSocketServer({ noServer: true });
 
-    wss.on('connection', function connection(ws, req, userId) {
-        console.log("userId: ", userId);
-        // on connection, create a sessionId. store it here and in the db
-        let gameId;
-        let sessionId = crypto.randomBytes(16).toString('hex');
-
-        GameDB.addSession(sessionId, ws);
-
-        ws.on('message', function message(e) {
-            console.log('received: "%s"', e);
-
-            try {
-                let msg = JSON.parse(e);
-
-                switch (msg.type) {
-                    case "join":
-                        gameId = msg.data.gameId;
-                        const granted = GameDB.join(gameId, sessionId);
-
-                        sendJoinResult(ws, granted);
-
-                        if (granted) {
-                            sendAddPlayer(ws, msg.data)
-                        }
-
-                        break;
-
-                    case "imReady":
-                        // do this to all players in a room/game
-                        sendPlayerReadyStatus(ws, msg.data.name, true);
-                        break;
-                    case "imNotReady":
-                        // do this to all players in a room/game
-                        sendPlayerReadyStatus(ws, msg.data.name, false);
-                        break;
-                    case "playerNotReady":
-                        // set a player to not ready
-                        break;
-                    case "asdf":
-                        break;
-                    case "qwerty":
-                        break;
-                    case "1234":
-                        break;
-                }
-            } catch (e) {
-                console.log(e);
-                console.log("data not in json format: ", e);
-            }
-
-        });
-    });
+    wss.on('connection', connectionHandler);
 
     httpServer.on('upgrade', function upgrade(req, socket, head) {
         let userId = getUserId(req.headers.cookie);
@@ -98,13 +59,66 @@ export default function SocketServer(httpServer) {
             wss.emit('connection', ws, req, userId);
         });
     });
+}
 
-    function getUserId(cookieString){
-        for (let cookie of cookieString.split(';')) {
-            const [name, value] = cookie.split('=');
-            if (name === 'userId') {
-                return value;
-            }
+function getUserId(cookieString){
+    for (let cookie of cookieString.split(';')) {
+        const [name, value] = cookie.split('=');
+        if (name === 'userId') {
+            return value;
         }
     }
+}
+
+const typeMap = {
+    'join': GameDB.join,
+    'unjoin': GameDB.unjoin,
+    'imReady': GameDB.imReady,
+    'imNotReady': GameDB.imNotReady,
+    'playerNotReady': GameDB.playerNotReady,
+};
+
+function connectionHandler(ws, req, userId) {
+    let sessionId = SessionStore.add(ws, userId);
+
+    ws.on('message', function(e) {
+        console.log('received: "%s"', e);
+
+        let msg;
+        try {
+            msg = JSON.parse(e);
+        } catch (e) {
+            console.log(e);
+            console.log("data not in json format: ", e);
+
+            return;
+        }
+
+        switch (msg.type) {
+            case "join":
+                // join a user and session to a game
+                GameDB.join(sessionId, msg.data.gameId, msg.data.name);
+                break;
+
+            case "unjoin":
+                // remove a user and session to a game
+                GameDB.unjoin(sessionId);
+                break;
+
+            case "imReady":
+                // do this to all players in a room/game
+                GameDB.imReady(sessionId);
+                break;
+
+            case "imNotReady":
+                // do this to all players in a room/game
+                GameDB.imReady(sessionId);
+                break;
+
+            case "playerNotReady":
+                // set a player to not ready
+                GameDB.playerNotReady(sessionId, playerId);
+                break;
+        }
+    });
 }
