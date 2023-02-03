@@ -77,16 +77,17 @@ class GameDB {
 
         // update the session to gameId
         this.sessionToGame[sessionId] = gameId;
-
-
         const game = this.games[gameId];
 
-
         // update the game
-        let newPlayer = game.addSession(sessionId, name);
+        let player = game.addSession(sessionId, name);
 
+        let data = {
+            myPlayerId: player.id,
+            state: game.state()
+        }
 
-        SessionStore.send(sessionId, "join/grant", true);
+        SessionStore.send(sessionId, "join/grant", data);
 
         return true;
     }
@@ -106,15 +107,25 @@ class GameDB {
     }
 
     imReady(sessionId) {
+        let userId = SessionStore.getUser(sessionId);
+        const gameId = this.sessionToGame[sessionId];
+        const game = this.games[gameId];
+
         // find the player from the userId
-        // update the player state to ready
-        // broadcast to all sockets
+        let playerId = game.userToPlayer[userId];
+
+        game.setPlayerReady(playerId, true);
     }
 
     imNotReady(sessionId) {
+        let userId = SessionStore.getUser(sessionId);
+        const gameId = this.sessionToGame[sessionId];
+        const game = this.games[gameId];
+
         // find the player from the userId
-        // update the player state to not ready
-        // broadcast to all sockets
+        let playerId = game.userToPlayer[userId];
+
+        game.setPlayerReady(playerId, false);
     }
 
     playerNotReady(sessionId, playerId) {

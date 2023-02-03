@@ -17,31 +17,20 @@ export function gameLoader(params) {
     return { ws: ws };
 }
 
-const fakePlayers = [
-    { name:"Brandon OToole", ready: false },
-    { name:"Tsan Lee", ready: true },
-    { name:"Don Nguyen", ready: false },
-    { name:"Vanessa Hoy", ready: false },
-];
-
 function Game(props) {
     const { gameId } = useParams();
     const { ws } = useLoaderData()
     const [ gameExists, updateGameExists ] = useState(null);
 
-    //const [ players, changePlayers ] = useState(fakePlayers);
     const [ players, changePlayers ] = useState([]);
     const [ ready, changeReady ] = useState(false);
-    //const [ thing, handler ] = useState(default);
-    //const [ thing, handler ] = useState(default);
+    const [ myPlayerId, setMyId ] = useState("");
 
     wsSetup();
 
+    // when the ready tic is changed
     useEffect(() => {
-        let msg = {
-            type: ready ? "imready" : "imnotready",
-            data: { name: localStorage.getItem("name")},
-        };
+        let msg = { type: ready ? "imready" : "imnotready", data: {} };
 
         if (ws.readyState === ws.OPEN) {
             ws.send( JSON.stringify(msg) );
@@ -51,6 +40,19 @@ function Game(props) {
         }
 
     }, [ ready ]);
+
+    useEffect(() => {
+        if (!myPlayerId) { return; }
+
+        for (let player of players) {
+            if (player.id === myPlayerId) {
+                if (player.ready !== ready) {
+                    changeReady(player.ready);
+                }
+            }
+        }
+    }, [ players ]);
+
 
     useBeforeUnload(wsCleanup);
 
@@ -89,6 +91,10 @@ function Game(props) {
         let msg = JSON.parse(e.data);
         switch (msg.type) {
             case 'join/grant':
+                // TODO: we need to notify this player who they are
+
+                setMyId(msg.data.myPlayerId);
+                changePlayers(Object.values(msg.data.state));
                 updateGameExists(true);
                 break;
 
@@ -97,23 +103,25 @@ function Game(props) {
                 break;
 
             case 'lobby/addPlayer':
-                players.push(msg.data);
-                changePlayers(players);
+                let addCopy = JSON.parse(JSON.stringify(players));
+                addCopy.push(msg.data);
+                changePlayers(addCopy);
                 break;
 
-            case 'lobby/setPlayerReady':
+            case 'lobby/playerReady':
                 let readyCopy = JSON.parse(JSON.stringify(players));
 
                 for (let player of readyCopy) {
-                    if (player.name === msg.data.name) {
-                        player.ready = true;
+                    if (player.id === msg.data.id) {
+                        player.ready = msg.data.ready;
+                        //player.ready = true;
                     }
                 }
 
                 changePlayers(readyCopy);
                 break;
 
-            case 'lobby/setPlayerNotReady':
+            case 'lobby/playerNotReady':
                 let notReadyCopy = JSON.parse(JSON.stringify(players));
 
                 for (let player of notReadyCopy) {
@@ -141,7 +149,7 @@ function Game(props) {
     }
 
     function closeHandler(e) {
-        //console.log("close: ", e);
+        console.log("close: ", e);
     }
 
     function wsSetup() {

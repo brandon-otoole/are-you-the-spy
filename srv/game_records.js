@@ -2,21 +2,23 @@ export default {
     "1234": {
         "id": "1234",
         "players": {
-            "ae468b": {
-                "id": "ae468b",
-                "name": "Brandon OToole",
+            "536dbe": {
+                "id": "536dbe",
+                "name": "Luke Perry",
                 "ready": false
             }
         },
         "sessions": {
-            "8fdcc55c419ac92501d854f82ad5dd34": "8fdcc55c419ac92501d854f82ad5dd34"
+            "e9f1780ff2c18204eeeb391068dccbc5": "e9f1780ff2c18204eeeb391068dccbc5",
+            "10196d5e212cb30a23ba7d0afa496f5e": "10196d5e212cb30a23ba7d0afa496f5e"
         },
         "userToPlayer": {
-            "67e9e48ffb52a929dbe280e2fcf67ef2": "ae468b"
+            "f6a47b703176a6117b45e57e7c2d9e6f": "536dbe"
         },
         "userToSessions": {
-            "67e9e48ffb52a929dbe280e2fcf67ef2": [
-                "8fdcc55c419ac92501d854f82ad5dd34"
+            "f6a47b703176a6117b45e57e7c2d9e6f": [
+                "e9f1780ff2c18204eeeb391068dccbc5",
+                "10196d5e212cb30a23ba7d0afa496f5e"
             ]
         }
     },

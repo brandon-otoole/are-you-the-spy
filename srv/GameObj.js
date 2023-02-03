@@ -50,10 +50,16 @@ class GameObj {
         this.userToSessions[userId].push(sessionId);
 
         // check to see if this user is already a player
-        if ( !(userId in this.userToPlayer) ) {
-            this.addPlayer(userId, name)
+        //return this.userToPlayer[userId] || this.addPlayer(userId, name);
+
+        if (userId in this.userToPlayer) {
+            let playerId = this.userToPlayer[userId];
+            return this.players[playerId];
+        } else {
+            return this.addPlayer(userId, name)
         }
 
+        return player;
     }
 
     addPlayer(userId, name) {
@@ -66,18 +72,13 @@ class GameObj {
         this.players[id] = new PlayerObj(id, name);
 
         // this is a new user, send a join message to all sessions
-        SessionStore.sendAll(
-            Object.keys(this.sessions),
-            "lobby/addPlayer",
-            {
-                //id: id,
-                //name: this.players[id].name,
-                //ready: false,
-                id: this.players[id].id,
-                name: this.players[id].name,
-                ready: this.players[id].ready,
-            }
-        );
+        this.broadcast( "lobby/addPlayer", {
+            id: this.players[id].id,
+            name: this.players[id].name,
+            ready: this.players[id].ready,
+        });
+
+        return this.players[id];
     }
 
     removePlayer(userId) {
@@ -95,21 +96,26 @@ class GameObj {
         // remove all the sessions for this user
 
         // this is a new user, send a join message to all sessions
-        SessionStore.sendAll(
-            Object.keys(this.sessions),
-            "lobby/addPlayer",
-            {
-                //id: id,
-                //name: this.players[id].name,
-                //ready: false,
-                id: this.players[id].id,
-                name: this.players[id].name,
-                ready: this.players[id].ready,
-            }
-        );
-
+        this.broadcast("lobby/removePlayer", { id: playerId });
     }
 
+    setPlayerReady(playerId, ready) {
+        console.log("OBJ set ready: ", playerId, ready);
+        this.players[playerId].ready = ready;
+
+        this.broadcast("lobby/playerReady", {
+            id: this.players[playerId].id,
+            ready: this.players[playerId].ready
+        });
+    }
+
+    state() {
+        return JSON.parse(JSON.stringify(this.players));
+    }
+
+    broadcast(type, data) {
+        SessionStore.sendAll(Object.keys(this.sessions), type, data);
+    }
 }
 
 function getUniquePlayerId(pool) {

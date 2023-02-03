@@ -5,19 +5,12 @@ import Box from "@mui/material/Box";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-
 import PreGameTable from "./PreGameTable.js";
 import PlayerReady from "./PlayerReady.js";
 
 function createData(record) {
     const ready = record.ready ? "✔" : "";
-    return { status:ready, name:record.name, remove:"x" };
+    return { id: record.id, status:ready, name:record.name, remove:"x" };
 }
 
 function PreGame(props) {

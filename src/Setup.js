@@ -1,9 +1,11 @@
 import NameForm from './NameForm';
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Setup() {
     const [ name, setName ] = useState("");
+    const navigate = useNavigate();
 
   return (
     <div className="App">
@@ -19,16 +21,47 @@ function Setup() {
       </button>
     </div>
   );
-}
 
 async function nameChanged(name) {
-    // save the name to local storage
-    await localStorage.setItem('name', name);
+        // save the name to local storage
+        await localStorage.setItem('name', name);
 
-    // load a new page
-    await localStorage.setItem('isSetup', true);
+        let options = {
+            method: 'POST',
+            headers: { 'Content-Type': "application/json", },
+            body: JSON.stringify({}),
+        };
 
-    window.location.reload(false);
+        fetch("http://spygame.lan/api/login", options)
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error('Network response was not OK');
+                }
+
+                return res;
+            })
+            .then(res => res.json())
+            .then( res => {
+                console.log(res);
+                return res;
+            })
+            .then(
+                async (result) => {
+                    // load a new page
+                    await localStorage.setItem('isSetup', true);
+                    window.location.reload(false);
+                },
+                (error) => {
+                    console.log("There was an error")
+                    console.log(error)
+                }
+            )
+            .catch((error) => {
+                console.error('there has been an error with fetch', error);
+            });
+
+    }
 }
 
 export default Setup;
+

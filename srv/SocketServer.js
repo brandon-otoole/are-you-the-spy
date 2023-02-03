@@ -9,9 +9,6 @@ function sendJoinResult(ws, grant) {
     let msg = { type: grant ? "join/grant" : "join/deny" };
 
     ws.send(JSON.stringify(msg));
-
-    let resp = { type: "granted", data: false };
-
 }
 
 function sendAddPlayer(ws, player) {
@@ -88,7 +85,6 @@ function connectionHandler(ws, req, userId) {
         try {
             msg = JSON.parse(e);
         } catch (e) {
-            console.log(e);
             console.log("data not in json format: ", e);
 
             return;
@@ -106,13 +102,15 @@ function connectionHandler(ws, req, userId) {
                 break;
 
             case "imReady":
+            case "imready":
                 // do this to all players in a room/game
                 GameDB.imReady(sessionId);
                 break;
 
             case "imNotReady":
+            case "imnotready":
                 // do this to all players in a room/game
-                GameDB.imReady(sessionId);
+                GameDB.imNotReady(sessionId);
                 break;
 
             case "playerNotReady":
