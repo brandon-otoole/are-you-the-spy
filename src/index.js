@@ -18,7 +18,7 @@ import Setup from './Setup';
 import ErrorPage from './ErrorPage';
 
 const RequireAuth: FC<{ children: React.ReactElement }> = ({ children }) => {
-    const userIsLogged = localStorage.getItem('name');
+    const userIsLogged = localStorage.getItem('isSetup');
 
     if (!userIsLogged) {
         return <Setup />

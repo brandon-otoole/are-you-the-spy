@@ -26,7 +26,7 @@ export default function HttpServer() {
         next();
     });
 
-    expressApp.get('/login', (req, res) => {
+    expressApp.post('/login', (req, res) => {
         res.json({ login: true });
     });
 

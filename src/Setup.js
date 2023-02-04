@@ -48,6 +48,7 @@ async function nameChanged(name) {
             .then(
                 async (result) => {
                     // load a new page
+                    console.log();
                     await localStorage.setItem('isSetup', true);
                     window.location.reload(false);
                 },
