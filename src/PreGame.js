@@ -19,6 +19,7 @@ function PreGame(props) {
     //const [playerReady, setPlayerReady] = useState(false);
     const playerReady = props.ready;
     const setPlayerReady = props.handler;
+    const startGameEnabled = props.startGameEnabled;
 
     return (
         <Box sx={{ minWidth: 275 }}>
@@ -36,7 +37,7 @@ function PreGame(props) {
             <CardActions>
               <PlayerReady ready={playerReady} handler={setPlayerReady}/>
 
-              <Button variant="contained" disabled={true}>
+              <Button variant="contained" disabled={!startGameEnabled}>
                 Start Game
               </Button>
             </CardActions>

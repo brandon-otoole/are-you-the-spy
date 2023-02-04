@@ -25,6 +25,10 @@ class GameObj {
         this.userToSessions = {};
     }
 
+    getReadyCount() {
+        return Object.values(this.players).filter(p => p.ready).length;
+    }
+
     removeUser(userId) {
         // look up the player from the user
         let playerId = this.userToPlayer[userId];
@@ -107,6 +111,10 @@ class GameObj {
             id: this.players[playerId].id,
             ready: this.players[playerId].ready
         });
+
+        // tell the clients if game start requirements have been met
+        const enableStart = this.getReadyCount() >= 2;
+        this.broadcast("lobby/enableStart", { enabled: enableStart });
     }
 
     state() {

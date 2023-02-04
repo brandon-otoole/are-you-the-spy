@@ -20,17 +20,20 @@ export function gameLoader(params) {
 function Game(props) {
     const { gameId } = useParams();
     const { ws } = useLoaderData()
+
     const [ gameExists, updateGameExists ] = useState(null);
 
-    const [ players, changePlayers ] = useState([]);
-    const [ ready, changeReady ] = useState(false);
+    const [ startGameState, setStartGameState ] = useState(false);
+    const [ readyState, changeReady ] = useState(false);
+
     const [ myPlayerId, setMyId ] = useState("");
+    const [ players, changePlayers ] = useState([]);
 
     wsSetup();
 
     // when the ready tic is changed
     useEffect(() => {
-        let msg = { type: ready ? "imready" : "imnotready", data: {} };
+        let msg = { type: readyState ? "imready" : "imnotready", data: {} };
 
         if (ws.readyState === ws.OPEN) {
             ws.send( JSON.stringify(msg) );
@@ -39,20 +42,19 @@ function Game(props) {
             //console.log("ws not ready:", ws.readyState);
         }
 
-    }, [ ready ]);
+    }, [ readyState ]);
 
     useEffect(() => {
         if (!myPlayerId) { return; }
 
         for (let player of players) {
             if (player.id === myPlayerId) {
-                if (player.ready !== ready) {
+                if (player.ready !== readyState) {
                     changeReady(player.ready);
                 }
             }
         }
     }, [ players ]);
-
 
     useBeforeUnload(wsCleanup);
 
@@ -62,7 +64,8 @@ function Game(props) {
         return <NoGame />;
     }
 
-    return <PreGame players={players} ready={ready} handler={changeReady}/>;
+    return <PreGame players={players} ready={readyState} handler={changeReady}
+        startGameEnabled={startGameState} />;
 
     function openHandler(e) {
         //console.log("open: ", e);
@@ -133,8 +136,9 @@ function Game(props) {
                 changePlayers(notReadyCopy);
                 break;
 
-            case 'lobby/startGame':
-                console.log("MESSAGE STUB: ", "lobby/startGame");
+            case 'lobby/enableStart':
+                console.log("MESSAGE STUB: ", "lobby/enableStart");
+                setStartGameState(msg.data.enabled);
                 break;
 
             case 'game/start':
