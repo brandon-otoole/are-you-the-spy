@@ -52,6 +52,12 @@ export default function SocketServer(httpServer) {
     httpServer.on('upgrade', function upgrade(req, socket, head) {
         let userId = getUserId(req.headers.cookie);
 
+        if (!userId) {
+            socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+            socket.destroy();
+            return;
+        }
+
         wss.handleUpgrade(req, socket, head, function done(ws) {
             wss.emit('connection', ws, req, userId);
         });
@@ -59,6 +65,8 @@ export default function SocketServer(httpServer) {
 }
 
 function getUserId(cookieString){
+    if (!cookieString) { return null; }
+
     for (let cookie of cookieString.split(';')) {
         const [name, value] = cookie.split('=');
         if (name === 'userId') {
