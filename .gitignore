@@ -12,6 +12,16 @@
 
 # production
 /build
+/dist
+
+# config files
+**config.js
+config.*.js
+*.conf
+*.service
+
+# records
+**game_records.js
 
 # misc
 .DS_Store
