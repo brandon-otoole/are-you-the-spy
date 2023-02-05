@@ -98,7 +98,6 @@ const typeMap = {
 };
 
 function heartbeat() {
-    console.log("heartbeat - pong");
     this.isAlive = true;
 }
 
