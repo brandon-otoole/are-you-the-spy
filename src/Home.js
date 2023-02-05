@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import JoinForm from './JoinForm';
 
+import config from './config';
+
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
@@ -49,7 +51,7 @@ function Home() {
             body: JSON.stringify(body),
         };
 
-        fetch("http://localhost:3000/api/game", options)
+        fetch("http://" + config.host+ "/api/game", options)
             .then((res) => {
                 if (!res.ok) {
                     throw new Error('Network response was not OK');

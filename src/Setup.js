@@ -2,6 +2,7 @@ import NameForm from './NameForm';
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import config from "./config.js";
 
 function Setup() {
     const [ name, setName ] = useState("");
@@ -32,7 +33,8 @@ async function nameChanged(name) {
             body: JSON.stringify({}),
         };
 
-        fetch("http://spygame.lan/api/login", options)
+        //fetch("http://spygame.lan/api/login", options)
+        fetch("http://" + config.host + "/api/login", options)
             .then((res) => {
                 if (!res.ok) {
                     throw new Error('Network response was not OK');

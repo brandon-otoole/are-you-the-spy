@@ -1,6 +1,8 @@
 import React, {useState, useEffect, componentState } from "react";
 import { useParams, useLoaderData, useBeforeUnload } from 'react-router-dom';
 
+import config from "./config.js";
+
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
@@ -12,7 +14,7 @@ import NoGame from "./NoGame.js";
 import LoadingGame from "./LoadingGame.js";
 
 export function gameLoader(params) {
-    let ws = new WebSocket("ws://spygame.lan/ws");
+    let ws = new WebSocket("ws://" + config.host + "/ws");
 
     return { ws: ws };
 }
@@ -20,6 +22,7 @@ export function gameLoader(params) {
 function Game(props) {
     const { gameId } = useParams();
     const { ws } = useLoaderData()
+    let heartbeatTimer;
 
     const [ gameExists, updateGameExists ] = useState(null);
 
@@ -68,6 +71,11 @@ function Game(props) {
         startGameEnabled={startGameState} />;
 
     function openHandler(e) {
+        heartbeatTimer = setInterval(function ping() {
+            console.log("ping... ");
+            ws.send(JSON.stringify({ type: "ping", data:"" }));
+        }, 30000);
+
         //console.log("open: ", e);
         const msg = {
             "type": "join",
@@ -76,6 +84,7 @@ function Game(props) {
                 name: localStorage.getItem("name")
             }
         };
+
         ws.send(JSON.stringify(msg));
     }
 
@@ -152,7 +161,12 @@ function Game(props) {
         }
     }
 
+    function pongHandler(e) {
+        console.log("pong: ", e);
+    }
+
     function closeHandler(e) {
+        clearInterval(heartbeatTimer);
         console.log("close: ", e);
     }
 
@@ -160,6 +174,7 @@ function Game(props) {
         ws.onopen = openHandler;
         ws.onmessage = messageHandler;
         ws.onclose = closeHandler;
+        ws.onPong = pongHandler;
 
         return ws;
     }

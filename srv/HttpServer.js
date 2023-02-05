@@ -1,7 +1,7 @@
 import { createServer } from 'http';
 import express from 'express';
 import GameDB from "./GameDB.js";
-import cors from "cors";
+//import cors from "cors";
 import crypto from "crypto";
 
 import cookieParser from "cookie-parser"
@@ -11,9 +11,9 @@ export default function HttpServer() {
 
     expressApp.use(cookieParser());
 
-    expressApp.use(cors({
-        origin: 'http://localhost:8080'
-    }));
+    //expressApp.use(cors({
+        //origin: 'http://localhost:8080'
+    //}));
 
     expressApp.use(function(req, res, next) {
         let userId = req.cookies['userId'];
@@ -28,6 +28,10 @@ export default function HttpServer() {
 
     expressApp.post('/login', (req, res) => {
         res.json({ login: true });
+    });
+
+    expressApp.get('/test', (req, res) => {
+        res.json({ test: true });
     });
 
     expressApp.put('/game/:id', (req, res) => {

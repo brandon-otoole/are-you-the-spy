@@ -53,12 +53,14 @@ export default function SocketServer(httpServer) {
         let userId = getUserId(req.headers.cookie);
 
         if (!userId) {
+            console.log("NOT AUTHORIZED");
             socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
             socket.destroy();
             return;
         }
 
         wss.handleUpgrade(req, socket, head, function done(ws) {
+            console.log("upgrade" );
             wss.emit('connection', ws, req, userId);
         });
     });
