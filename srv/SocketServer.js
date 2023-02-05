@@ -42,12 +42,24 @@ function joinGame(ws, gameId, sessionId, userId, name) {
     }
 }
 
-
 export default function SocketServer(httpServer) {
     console.log("...setting up the socket server... ");
     const wss = new WebSocketServer({ noServer: true });
 
     wss.on('connection', connectionHandler);
+
+    const healthTimer = setInterval(function ping() {
+        wss.clients.forEach(function each(ws) {
+            if (ws.isAlive === false) { return ws.terminate(); }
+
+            ws.isAlive = false;
+            ws.ping();
+        });
+    }, 30000);
+
+    wss.on('close', function close() {
+        clearInterval(healthTimer);
+    });
 
     httpServer.on('upgrade', function upgrade(req, socket, head) {
         let userId = getUserId(req.headers.cookie);
@@ -85,8 +97,16 @@ const typeMap = {
     'playerNotReady': GameDB.playerNotReady,
 };
 
+function heartbeat() {
+    console.log("heartbeat - pong");
+    this.isAlive = true;
+}
+
 function connectionHandler(ws, req, userId) {
     let sessionId = SessionStore.add(ws, userId);
+
+    ws.isAlive = true;
+    ws.on('pong', heartbeat);
 
     ws.on('message', function(e) {
         console.log('received: "%s"', e);

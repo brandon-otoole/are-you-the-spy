@@ -71,11 +71,6 @@ function Game(props) {
         startGameEnabled={startGameState} />;
 
     function openHandler(e) {
-        heartbeatTimer = setInterval(function ping() {
-            console.log("ping... ");
-            ws.send(JSON.stringify({ type: "ping", data:"" }));
-        }, 30000);
-
         //console.log("open: ", e);
         const msg = {
             "type": "join",
@@ -161,12 +156,7 @@ function Game(props) {
         }
     }
 
-    function pongHandler(e) {
-        console.log("pong: ", e);
-    }
-
     function closeHandler(e) {
-        clearInterval(heartbeatTimer);
         console.log("close: ", e);
     }
 
@@ -174,7 +164,6 @@ function Game(props) {
         ws.onopen = openHandler;
         ws.onmessage = messageHandler;
         ws.onclose = closeHandler;
-        ws.onPong = pongHandler;
 
         return ws;
     }
