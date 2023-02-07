@@ -117,6 +117,17 @@ class GameObj {
         this.broadcast("lobby/enableStart", { enabled: enableStart });
     }
 
+    requestStartGame(userId, sessionId, playerId) {
+        // check if the requesting user is subscribed to this game
+
+        // check if the requesting player is ready
+
+        // check if the game has enough people
+
+        // broadcast to all sockets
+        this.broadcast("game/start", { role: "server defined role"});
+    }
+
     state() {
         return JSON.parse(JSON.stringify(this.players));
     }

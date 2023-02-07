@@ -10,6 +10,7 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 
 import PreGame from "./PreGame.js";
+import InGame from "./InGame.js";
 import NoGame from "./NoGame.js";
 import LoadingGame from "./LoadingGame.js";
 
@@ -25,6 +26,7 @@ function Game(props) {
     let heartbeatTimer;
 
     const [ gameExists, updateGameExists ] = useState(null);
+    const [ gameStarted, updateGameStarted ] = useState(false);
 
     const [ startGameState, setStartGameState ] = useState(false);
     const [ readyState, changeReady ] = useState(false);
@@ -32,7 +34,14 @@ function Game(props) {
     const [ myPlayerId, setMyId ] = useState("");
     const [ players, changePlayers ] = useState([]);
 
+    const [ isAlive, changeIsAlive ] = useState(true);
+    const [ playerRole, changePlayerRole ] = useState("initial test role");
+
     wsSetup();
+
+    function requestStartGame() {
+        ws.send(JSON.stringify({ type: "requestStartGame" }));
+    }
 
     // when the ready tic is changed
     useEffect(() => {
@@ -67,8 +76,16 @@ function Game(props) {
         return <NoGame />;
     }
 
-    return <PreGame players={players} ready={readyState} handler={changeReady}
-        startGameEnabled={startGameState} />;
+    // assert that the game exists
+
+    if (gameStarted === true) {
+        return <InGame players={players} playerRole={playerRole} isAlive={isAlive}
+            handler={changeIsAlive} />;
+    } else {
+        return <PreGame players={players} ready={readyState}
+            handler={changeReady} startGameEnabled={startGameState}
+            requestStartGame={requestStartGame} />;
+    }
 
     function openHandler(e) {
         //console.log("open: ", e);
@@ -103,6 +120,8 @@ function Game(props) {
                 setMyId(msg.data.myPlayerId);
                 changePlayers(Object.values(msg.data.state));
                 updateGameExists(true);
+                console.log(msg.data);
+                updateGameStarted(msg.data.started);
                 break;
 
             case 'join/deny':
@@ -121,7 +140,6 @@ function Game(props) {
                 for (let player of readyCopy) {
                     if (player.id === msg.data.id) {
                         player.ready = msg.data.ready;
-                        //player.ready = true;
                     }
                 }
 
@@ -146,7 +164,8 @@ function Game(props) {
                 break;
 
             case 'game/start':
-                console.log("MESSAGE STUB: ", "game/startGame");
+                updateGameStarted(true);
+                changePlayerRole(msg.data.role);
                 break;
 
             case 'game/eliminatePlayer':

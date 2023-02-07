@@ -128,14 +128,21 @@ class GameDB {
         game.setPlayerReady(playerId, false);
     }
 
-    playerNotReady(sessionId, playerId) {
+    playerNotReady(sessionId) {
         // update the player state to not ready
         // broadcast to all sockets
     }
 
+    requestStartGame(sessionId, playerId) {
+        let userId = SessionStore.getUser(sessionId);
+        const gameId = this.sessionToGame[sessionId];
+        const game = this.games[gameId];
+
+        game.requestStartGame(userId, sessionId, playerId);
+    }
+
     getPlayer(sessionId) {
         // TODO: get player object for sessionId
-        // 
         console.log("get player object for :", sessionId);
         return {};
     }

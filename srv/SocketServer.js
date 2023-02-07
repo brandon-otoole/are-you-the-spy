@@ -144,7 +144,14 @@ function connectionHandler(ws, req, userId) {
 
             case "playerNotReady":
                 // set a player to not ready
-                GameDB.playerNotReady(sessionId, playerId);
+
+                GameDB.playerNotReady(sessionId);
+                break;
+
+            case "requestStartGame":
+                console.log("lets get this party started");
+                // set a player to not ready
+                GameDB.requestStartGame(sessionId);
                 break;
         }
     });

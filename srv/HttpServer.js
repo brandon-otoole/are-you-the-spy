@@ -1,7 +1,6 @@
 import { createServer } from 'http';
 import express from 'express';
 import GameDB from "./GameDB.js";
-//import cors from "cors";
 import crypto from "crypto";
 
 import cookieParser from "cookie-parser"
@@ -11,17 +10,12 @@ export default function HttpServer() {
 
     expressApp.use(cookieParser());
 
-    //expressApp.use(cors({
-        //origin: 'http://localhost:8080'
-    //}));
-
     expressApp.use(function(req, res, next) {
         let userId = req.cookies['userId'];
-        if (!userId) {
-            userId = crypto.randomBytes(16).toString('hex');
-            req.cookies['userId'] = userId;
-            res.cookie("userId", userId, { httpOnly: true });
-        }
+        userId = userId || crypto.randomBytes(16).toString('hex');
+
+        req.cookies['userId'] = userId;
+        res.cookie("userId", userId, { httpOnly: true, maxAge: 34560000000, sameSite: "Strict" });
 
         next();
     });
@@ -43,8 +37,6 @@ export default function HttpServer() {
         // OR send them all a MOVE command
 
         // join the user to the game
-
-
 
         res.json({ join: true });
     });
