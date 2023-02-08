@@ -8,6 +8,8 @@ import cookieParser from "cookie-parser"
 export default function HttpServer() {
     const expressApp = express();
 
+    expressApp.disable("x-powered-by");
+
     expressApp.use(cookieParser());
 
     expressApp.use(function(req, res, next) {
