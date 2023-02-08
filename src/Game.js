@@ -120,7 +120,6 @@ function Game(props) {
                 setMyId(msg.data.myPlayerId);
                 changePlayers(Object.values(msg.data.state));
                 updateGameExists(true);
-                console.log(msg.data);
                 updateGameStarted(msg.data.started);
                 break;
 
@@ -159,7 +158,6 @@ function Game(props) {
                 break;
 
             case 'lobby/enableStart':
-                console.log("MESSAGE STUB: ", "lobby/enableStart");
                 setStartGameState(msg.data.enabled);
                 break;
 

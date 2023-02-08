@@ -18,11 +18,9 @@ class GameDB {
         // key: gameId
         // value: game object
         this.games = {};
-        this.games["1234"] = new GameObj("1234");
-        this.games["asdf"] = new GameObj("asdf");
         // TODO: we need to find a better way to load in the game data
         for (const [id, game] of Object.entries(game_records)) {
-            this.games[id] = new GameObj(id);
+            this.games[id] = GameObj.factory(game);
         }
 
         // a session is strictly tied to one user
@@ -52,6 +50,13 @@ class GameDB {
     }
 
     async close() {
+        for (let game of Object.values(this.games)) {
+            delete game["sessions"];
+            delete game.sessions;
+            delete game["userToSessions"];
+            delete game.userToSessions;
+        }
+
         let data = "export default " + JSON.stringify(this.games, null, 4);
 
         console.log(data);
@@ -84,7 +89,8 @@ class GameDB {
 
         let data = {
             myPlayerId: player.id,
-            state: game.state()
+            state: game.state(),
+            started: game.isStarted(),
         }
 
         SessionStore.send(sessionId, "join/grant", data);

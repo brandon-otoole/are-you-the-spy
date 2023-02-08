@@ -23,7 +23,6 @@ function PreGameTable(props) {
               <TableCell align="center">Status</TableCell>
               <TableCell align="left">Name</TableCell>
               <TableCell align="center">Boot?</TableCell>
-              <TableCell align="center">Player ID</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -32,7 +31,6 @@ function PreGameTable(props) {
               <TableCell align="center">{row.status}</TableCell>
               <TableCell align="left">{row.name}</TableCell>
               <TableCell align="center">{row.remove}</TableCell>
-              <TableCell align="center">{row.id}</TableCell>
             </TableRow>
             ))}
           </TableBody>
