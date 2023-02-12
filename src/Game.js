@@ -21,8 +21,11 @@ export function gameLoader(params) {
 }
 
 function Game(props) {
+    let reconnectDelay = 0;
+    let reconnectTimer;
+
     const { gameId } = useParams();
-    const { ws } = useLoaderData()
+    let { ws } = useLoaderData()
     let heartbeatTimer;
 
     const [ gameExists, updateGameExists ] = useState(null);
@@ -41,6 +44,18 @@ function Game(props) {
 
     function requestStartGame() {
         ws.send(JSON.stringify({ type: "requestStartGame" }));
+    }
+
+    function socketReconnect() {
+        console.log("reconnecting ...");
+        reconnectDelay = Math.max(reconnectDelay, 1000);
+        //reconnectDelay = Math.max(2*reconnectDelay, 1);
+
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+
+        ws = new WebSocket("ws://" + config.host + "/ws");
+        wsSetup();
     }
 
     // when the ready tic is changed
@@ -175,18 +190,28 @@ function Game(props) {
 
     function closeHandler(e) {
         console.log("close: ", e);
+        //ws = null;
+        //setTimeout(socketReconnect, reconnectDelay);
+    }
+
+    function errorHandler(e) {
+        console.log("error: ", e);
+        //ws = null;
+        //setTimeout(socketReconnect, reconnectDelay);
     }
 
     function wsSetup() {
         ws.onopen = openHandler;
         ws.onmessage = messageHandler;
         ws.onclose = closeHandler;
+        ws.onerror = errorHandler;
 
         return ws;
     }
 
     function wsCleanup() {
         ws.close();
+        ws = null;
     }
 }
 
