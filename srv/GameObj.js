@@ -122,6 +122,10 @@ class GameObj {
 
     setPlayerReady(playerId, ready) {
         console.log("OBJ set ready: ", playerId, ready);
+        if (this.players[playerId].ready == ready) {
+            return;
+        }
+
         this.players[playerId].ready = ready;
 
         this.broadcast("lobby/playerReady", {

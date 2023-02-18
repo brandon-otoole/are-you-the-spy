@@ -5,6 +5,8 @@ import Box from "@mui/material/Box";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 
+import { connect } from 'react-redux'
+
 import PreGameTable from "./PreGameTable.js";
 import PlayerReady from "./PlayerReady.js";
 
@@ -13,14 +15,22 @@ function createData(record) {
     return { id: record.id, status:ready, name:record.name, remove:"x" };
 }
 
-function PreGame(props) {
-    let rows = props.players.map(x => createData(x));
+const mapStateToProps = (state) => {
+   return {
+      counter: state
+   };
+};
 
-    //const [playerReady, setPlayerReady] = useState(false);
-    const playerReady = props.ready;
-    const setPlayerReady = props.handler;
-    const startGameEnabled = props.startGameEnabled;
-    const requestStartGame = props.requestStartGame;
+const mapDispatchToProps = (dispatch) => {
+   return {
+      //increment: () => dispatch(increment()),
+      //decrement: () => dispatch(decrement()),
+      //reset: () => dispatch(reset())
+   };
+};
+
+function PreGame(props) {
+    const { startGameEnabled, requestStartGame } = props;
 
     return (
         <Box sx={{ minWidth: 275 }}>
@@ -32,11 +42,11 @@ function PreGame(props) {
 
               Players
               <div align="center">
-                <PreGameTable rows={rows} />
+                <PreGameTable />
               </div>
             </CardContent>
             <CardActions>
-              <PlayerReady ready={playerReady} handler={setPlayerReady}/>
+              <PlayerReady />
 
               <Button variant="contained" disabled={!startGameEnabled}
                       onClick={requestStartGame}>
@@ -48,4 +58,4 @@ function PreGame(props) {
     );
 }
 
-export default PreGame;
+export default connect(mapStateToProps, mapDispatchToProps)(PreGame);

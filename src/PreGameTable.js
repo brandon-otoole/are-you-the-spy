@@ -4,6 +4,8 @@ import Box from "@mui/material/Box";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 
+import { connect } from 'react-redux';
+
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -12,8 +14,25 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
+function createData(record) {
+    const ready = record.ready ? "✔" : "";
+    return { id: record.id, status:ready, name:record.name, remove:"x" };
+}
+
+const mapStateToProps = (state) => {
+   return {
+      players: state.game.players,
+   };
+};
+
+const mapDispatchToProps = (dispatch) => {
+   return { };
+};
+
 function PreGameTable(props) {
-    const rows = props.rows;
+    const { players } = props;
+
+    let rows = players.map(x => createData(x));
 
     return (
       <TableContainer align="center" sx={{ maxWidth: 700 }}component={Paper}>
@@ -40,4 +59,4 @@ function PreGameTable(props) {
 
 }
 
-export default PreGameTable;
+export default connect(mapStateToProps, mapDispatchToProps)(PreGameTable);

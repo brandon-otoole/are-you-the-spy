@@ -1,5 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+
+import reducer from "./reducer.js";
 
 import {
     createBrowserRouter,
@@ -16,6 +20,11 @@ import Home from './Home';
 import Setup from './Setup';
 
 import ErrorPage from './ErrorPage';
+
+const store = createStore(
+    reducer,
+    { game: null },
+)
 
 const RequireAuth: FC<{ children: React.ReactElement }> = ({ children }) => {
     const userIsLogged = localStorage.getItem('isSetup');
@@ -72,13 +81,11 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+   <Provider store = {store}>
     <RouterProvider router={router}/>
+   </Provider>
   </React.StrictMode>
 );
-
-  //<React.StrictMode>
-  //  { <RouterProvider router={router}/> }
-  //</React.StrictMode>
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

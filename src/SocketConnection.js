@@ -1,5 +1,10 @@
+class SocketConnection {
+    constructor(host) {
+        this.host = host;
 
-function SocketConnection() {
+        this.ws = new WebSocket("ws://" + host + "/ws");
+        this.setup
+    }
 }
 
 export default SocketConnection;
