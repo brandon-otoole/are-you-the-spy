@@ -3,7 +3,7 @@ class SocketConnection {
         this.host = host;
 
         this.ws = new WebSocket("ws://" + host + "/ws");
-        this.setup
+        //this.setup
     }
 }
 

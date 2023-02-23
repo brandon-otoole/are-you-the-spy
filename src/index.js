@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 
 import reducer from "./reducer.js";
@@ -12,6 +12,8 @@ import {
 
 import './style.css';
 
+import WSMiddleware from './WSMiddleware';
+
 import App from './App';
 import Join from './Join';
 import Game, { gameLoader } from './Game';
@@ -21,9 +23,13 @@ import Setup from './Setup';
 
 import ErrorPage from './ErrorPage';
 
+const middleware = [ WSMiddleware ];
 const store = createStore(
     reducer,
-    { game: null },
+    { game: { players: [] } },
+    compose(
+        applyMiddleware(...middleware),
+    )
 )
 
 const RequireAuth: FC<{ children: React.ReactElement }> = ({ children }) => {

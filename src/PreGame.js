@@ -1,4 +1,3 @@
-import { useState, setState } from "react";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
@@ -9,11 +8,6 @@ import { connect } from 'react-redux'
 
 import PreGameTable from "./PreGameTable.js";
 import PlayerReady from "./PlayerReady.js";
-
-function createData(record) {
-    const ready = record.ready ? "✔" : "";
-    return { id: record.id, status:ready, name:record.name, remove:"x" };
-}
 
 const mapStateToProps = (state) => {
    return {

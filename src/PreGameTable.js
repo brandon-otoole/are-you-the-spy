@@ -1,8 +1,4 @@
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import Box from "@mui/material/Box";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
+//import Button from "@mui/material/Button";
 
 import { connect } from 'react-redux';
 
@@ -32,7 +28,7 @@ const mapDispatchToProps = (dispatch) => {
 function PreGameTable(props) {
     const { players } = props;
 
-    let rows = players.map(x => createData(x));
+    let rows = players ? players.map(x => createData(x)) : [];
 
     return (
       <TableContainer align="center" sx={{ maxWidth: 700 }}component={Paper}>
