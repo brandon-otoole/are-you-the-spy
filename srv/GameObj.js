@@ -42,6 +42,10 @@ class GameObj {
         return this.started;
     }
 
+    enableStart() {
+        return this.getReadyCount() >= 2;
+    }
+
     getReadyCount() {
         return Object.values(this.players).filter(p => p.ready).length;
     }
@@ -134,18 +138,20 @@ class GameObj {
         });
 
         // tell the clients if game start requirements have been met
-        const enableStart = this.getReadyCount() >= 2;
-        this.broadcast("lobby/enableStart", { enabled: enableStart });
+        this.broadcast("lobby/enableStart", { enabled: this.enableStart() });
     }
 
     requestStartGame(userId, sessionId, playerId) {
         this.started = true;
 
         // check if the requesting user is subscribed to this game
+        //TODO
 
         // check if the requesting player is ready
+        //TODO
 
         // check if the game has enough people
+        //TODO
 
         // broadcast to all sockets
         this.broadcast("game/start", { role: "server defined role"});

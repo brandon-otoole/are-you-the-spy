@@ -16,7 +16,7 @@ import WSMiddleware from './WSMiddleware';
 
 import App from './App';
 import Join from './Join';
-import Game, { gameLoader } from './Game';
+import Game from './Game';
 import New from './New';
 import Home from './Home';
 import Setup from './Setup';
@@ -58,8 +58,6 @@ const router = createBrowserRouter([
                     <RequireAuth>
                       <Game />
                     </RequireAuth>
-                ,
-                loader: gameLoader,
             },
             {
                 path: "join",

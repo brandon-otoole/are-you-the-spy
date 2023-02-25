@@ -7,18 +7,9 @@ import * as Actions from "./Actions.js";
 
 const WSMiddleware = () => {
     let ws = null;
+    const msgQueue = [];
 
     const onOpen = store => e => {
-        const state = store.getState();
-        console.log("on open:", state);
-
-        ws.send(JSON.stringify({
-            "type": "join",
-            "data": {
-                gameId:state.game.gameId,
-                name: localStorage.getItem("name")
-            }
-        }));
         store.dispatch(Actions.wsConnected(e.target.url));
     }
 
@@ -37,7 +28,6 @@ const WSMiddleware = () => {
             //console.log("error: ", e);
         };
 
-
     return store => next => action => {
         switch (action.type) {
             case 'WS_CONNECT':
@@ -53,24 +43,45 @@ const WSMiddleware = () => {
                 ws.onopen = onOpen(store);
                 break;
 
+            case 'WS_CONNECTED':
+                for (const msg of msgQueue) {
+                    //console.log("delayed send:", msg);
+                    ws.send(JSON.stringify(msg));
+                }
+                break;
+
             case 'WS_DISCONNECT':
-                if (ws != null) {
-                    ws.close();
+                if (ws === null) {
+                    // do nothing
+                } else if (ws.readyState === ws.OPEN) {
+                    for (const msg of msgQueue) {
+                        ws.send(JSON.stringify(msg));
+                    }
                 }
 
+                msgQueue.length = 0;
+                ws.close();
                 ws = null;
                 break;
 
-            case 'WS_MESSAGE':
-                ws.send(JSON.stringify(action.msg));
+            case 'WS_DISCONNECTED':
                 break;
 
-            case 'stuff':
-                console.log("intercept some stuff");
-                // TODO: here you can do web socket logicy things
+            case 'WS_MESSAGE':
+                if (ws.readyState === ws.CONNECTING) {
+                    //console.log("ws is: ", "CONNECTING");
+                    msgQueue.push(action.msg);
+                } else if (ws.readyState === ws.OPEN) {
+                    ws.send(JSON.stringify(action.msg));
+                } else if (ws.readyState === ws.CLOSING) {
+                    //console.log("ws is: ", "CLOSING");
+                } else if (ws.readyState === ws.CLOSED) {
+                    //console.log("ws is: ", "CLOSED");
+                }
                 break;
 
             default:
+                //console.log("middleware fallthrough", action);
                 // skip the middleware and forward the action to the next step
                 return next(action);
         }

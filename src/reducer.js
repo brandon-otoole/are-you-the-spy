@@ -57,7 +57,7 @@ const reducer = (state, action) => {
                 ...state,
                 game: {
                     ...state.game,
-                    started: action.data.enabled,
+                    enabled: action.data.enabled,
                 },
             };
 

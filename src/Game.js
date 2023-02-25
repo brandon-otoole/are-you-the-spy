@@ -1,7 +1,7 @@
 import config from "./config.js";
 
 import { useEffect } from 'react';
-import { useParams, useLoaderData, useBeforeUnload } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux'
 //import { increment, decrement, reset } from './actions';
 
@@ -15,27 +15,20 @@ import LoadingGame from "./LoadingGame.js";
 
 function Game(props) {
     const { gameId } = useParams();
-    const { game, setGameId, wsConnect, wsJoin, wsDisconnect } = props;
-
-    wsSetup();
-    function wsSetup() {
-        // TODO: connect and join
-    }
+    const { game, wsConnect, wsMessage, wsDisconnect } = props;
 
     useEffect(() => {
-        setGameId(gameId);
         wsConnect("ws://" + config.host + "/ws");
+        wsMessage({
+            "type": "join",
+            "data": {
+                gameId: gameId,
+                name: localStorage.getItem("name")
+            }
+        });
 
-        return () => {
-            wsDisconnect();
-        };
-    }, [ ]);
-
-    useBeforeUnload(wsCleanup);
-    function wsCleanup() {
-        // TODO: not totally sure what should happen.
-        // probably close the socket for real
-    }
+        return wsDisconnect;
+    }, [ gameId ]);
 
     if (game === null) {
         return <LoadingGame />;
@@ -44,13 +37,6 @@ function Game(props) {
     }
 
     return game.started === true ? <InGame /> : <PreGame />
-}
-
-export function gameLoader(params) {
-    // TODO: connect the socket
-
-    //return { gameId: params.gameId };
-    return {};
 }
 
 const S2P = (state) => {
@@ -62,9 +48,8 @@ const S2P = (state) => {
 const D2P = (dispatch) => {
    return {
        //handleMessage: (msg) => dispatch(msg),
-       setGameId: (gameId) => dispatch(Actions.setGameId(gameId)),
        wsConnect: (host, gameId) => dispatch(Actions.wsConnect(host, gameId)),
-       wsJoin: () => dispatch(Actions.wsJoin()),
+       wsMessage: (msg) => dispatch(Actions.wsMessage(msg)),
        wsDisconnect: () => dispatch(Actions.wsDisconnect()),
    };
 };

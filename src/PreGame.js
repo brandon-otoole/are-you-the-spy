@@ -9,17 +9,18 @@ import { connect } from 'react-redux'
 import PreGameTable from "./PreGameTable.js";
 import PlayerReady from "./PlayerReady.js";
 
-const mapStateToProps = (state) => {
+const S2P = (state) => {
    return {
-      counter: state
+      startGameEnabled: state.game.enabled,
    };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const D2P = (dispatch) => {
    return {
-      //increment: () => dispatch(increment()),
-      //decrement: () => dispatch(decrement()),
-      //reset: () => dispatch(reset())
+       requestStartGame: () => dispatch({
+           type: "WS_MESSAGE",
+           msg:{ type: "requestStartGame" }
+       }),
    };
 };
 
@@ -52,4 +53,4 @@ function PreGame(props) {
     );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PreGame);
+export default connect(S2P, D2P)(PreGame);
