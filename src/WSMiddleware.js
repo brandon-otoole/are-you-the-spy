@@ -1,87 +1,75 @@
 import config from "./config.js";
 
 import * as Actions from "./Actions.js";
+import SocketConnection from "./SocketConnection.js";
 
 // TODO: implement reconnect
 // TODO: manage how messages are passed from socket to store
 
 const WSMiddleware = () => {
-    let ws = null;
-    const msgQueue = [];
+    let connection = null;
+    let special = "special";
 
-    const onOpen = store => e => {
-        store.dispatch(Actions.wsConnected(e.target.url));
-    }
+    const wsLifecycle = store => ({
+        onOpen: e => {
+            //store.dispatch(Actions.wsConnected(e.target.url));
+        },
+        onClose: e => {
+            //store.dispatch(Actions.wsDisconnected());
+        },
+        onMessage: e => {
+            const msg = JSON.parse(e.data);
 
-    const onClose = store => e => {
-        store.dispatch(Actions.wsDisconnected());
-    }
-
-    const onMessage = store => e => {
-        const msg = JSON.parse(e.data);
-
-        store.dispatch(msg);
-    }
-
-    const onError = store => e => {
-            // log the error in some way
-            //console.log("error: ", e);
-        };
+            store.dispatch(msg);
+        },
+        onError: e => {
+                console.error(e);
+        },
+    });
 
     return store => next => action => {
         switch (action.type) {
             case 'WS_CONNECT':
-                if (ws != null) {
-                    ws.close();
-                }
-
-                ws = new WebSocket(action.host);
-
-                ws.onerror = onError(store);
-                ws.onmessage = onMessage(store);
-                ws.onclose = onClose(store);
-                ws.onopen = onOpen(store);
+                //console.log("ws connect");
+                // create a websocket wrapper
+                connection = new SocketConnection(action.host, wsLifecycle(store));
                 break;
 
             case 'WS_CONNECTED':
-                for (const msg of msgQueue) {
-                    //console.log("delayed send:", msg);
-                    ws.send(JSON.stringify(msg));
-                }
+                //console.log("ws connected");
                 break;
 
             case 'WS_DISCONNECT':
-                if (ws === null) {
-                    // do nothing
-                } else if (ws.readyState === ws.OPEN) {
-                    for (const msg of msgQueue) {
-                        ws.send(JSON.stringify(msg));
-                    }
-                }
-
-                msgQueue.length = 0;
-                ws.close();
-                ws = null;
+                //console.log("ws disconnect");
+                // destroy the websocket wrapper and tell it to close
+                connection.close();
+                connection = null;
                 break;
 
             case 'WS_DISCONNECTED':
+                //console.log("ws disconnected");
+                // this is a pretty worthless event. set state on disconnect
                 break;
 
             case 'WS_MESSAGE':
-                if (ws.readyState === ws.CONNECTING) {
-                    //console.log("ws is: ", "CONNECTING");
-                    msgQueue.push(action.msg);
-                } else if (ws.readyState === ws.OPEN) {
-                    ws.send(JSON.stringify(action.msg));
-                } else if (ws.readyState === ws.CLOSING) {
-                    //console.log("ws is: ", "CLOSING");
-                } else if (ws.readyState === ws.CLOSED) {
-                    //console.log("ws is: ", "CLOSED");
-                }
+                //console.log("ws message");
+
+                connection.send(action.msg);
+                break;
+
+            case 'connection/identify':
+                //console.log("ws message");
+
+                connection.identify();
+                break;
+
+            case 'connection/assignSessionId':
+                console.log("assign session id", action);
+
+                connection.setSessionId(action.data.sessionId);
                 break;
 
             default:
-                //console.log("middleware fallthrough", action);
                 // skip the middleware and forward the action to the next step
                 return next(action);
         }

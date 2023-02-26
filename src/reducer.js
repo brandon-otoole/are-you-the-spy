@@ -78,6 +78,7 @@ const reducer = (state, action) => {
             };
 
         default:
+            console.log("missed message:", action);
             return {
                 ...state,
             };

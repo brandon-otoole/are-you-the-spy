@@ -105,11 +105,11 @@ class GameDB {
         // find out what game this is for
         const gameId = this.sessionToGame[sessionId];
         const game = this.games[gameId];
-        game.removePlayer(userId);
+        game?.removePlayer(userId);
 
         // remove stuff
-        const player = game.players[userId];
-        delete game.players[userId];
+        const player = game?.players[userId];
+        delete game?.players[userId];
     }
 
     imReady(sessionId) {
@@ -118,9 +118,9 @@ class GameDB {
         const game = this.games[gameId];
 
         // find the player from the userId
-        let playerId = game.userToPlayer[userId];
+        let playerId = game?.userToPlayer[userId];
 
-        game.setPlayerReady(playerId, true);
+        game?.setPlayerReady(playerId, true);
     }
 
     imNotReady(sessionId) {
@@ -129,9 +129,9 @@ class GameDB {
         const game = this.games[gameId];
 
         // find the player from the userId
-        let playerId = game.userToPlayer[userId];
+        let playerId = game?.userToPlayer[userId];
 
-        game.setPlayerReady(playerId, false);
+        game?.setPlayerReady(playerId, false);
     }
 
     playerNotReady(sessionId) {
@@ -144,7 +144,7 @@ class GameDB {
         const gameId = this.sessionToGame[sessionId];
         const game = this.games[gameId];
 
-        game.requestStartGame(userId, sessionId, playerId);
+        game?.requestStartGame(userId, sessionId, playerId);
     }
 
     getPlayer(sessionId) {

@@ -2,15 +2,15 @@ import crypto from 'crypto';
 
 class SessionStore {
     constructor() {
-        this.sockets = {};
+        this.sessions = {};
         this.users = {};
     }
 
     send(id, type, data) {
-        if (id in this.sockets) {
+        if (id in this.sessions) {
             let payload = { type: type, data: data };
 
-            this.sockets[id].send(JSON.stringify(payload));
+            this.sessions[id].send(JSON.stringify(payload));
         }
     }
 
@@ -24,17 +24,39 @@ class SessionStore {
         return this.users[sessionId];
     }
 
+    update(sessionId, ws, userId) {
+        // don't allow clients to specify their own session info
+        if (!(sessionId in this.sessions) || !(sessionId in this.users)) {
+            return;
+        }
+
+        // don't allow sessions to be taken over by different users
+        if (userId !== this.users[sessionId]) {
+            return;
+        }
+
+        // try to close the old websocket
+        let oldSocket = this.sessions[sessionId];
+        oldSocket.close();
+
+        // update the session socket
+        this.sessions[sessionId] = ws;
+
+        // pass back the sessionId to indicate success
+        return sessionId;
+    }
+
     add(ws, userId) {
-        let sessionId = getUniqueId(this.sockets);
-        this.sockets[sessionId] = ws;
+        let sessionId = getUniqueId(this.sessions);
+        this.sessions[sessionId] = ws;
         this.users[sessionId] = userId;
 
         return sessionId;
     }
 
     remove(sessionId) {
-        if (sessionId in this.sockets) {
-            delete this.sockets[sessionId];
+        if (sessionId in this.sessions) {
+            delete this.sessions[sessionId];
 
             return true
         }
@@ -44,7 +66,7 @@ class SessionStore {
 
 }
 
-function getUniqueId(pool) {
+export function getUniqueId(pool) {
     let id;
     do {
         id = crypto.randomBytes(16).toString('hex');

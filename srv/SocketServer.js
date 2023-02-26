@@ -1,6 +1,8 @@
 import { WebSocketServer } from "ws";
 import GameDB from "./GameDB.js";
-import SessionStore from "./SessionStore.js";
+import SessionStore, { getUniqueId } from "./SessionStore.js";
+
+let socketIds = {};
 
 // TODO: This needs to be upgraded to track connections per room, track who is
 //       connected with which ws and who has joined which rooms
@@ -72,7 +74,6 @@ export default function SocketServer(httpServer) {
         }
 
         wss.handleUpgrade(req, socket, head, function done(ws) {
-            console.log("upgrade" );
             wss.emit('connection', ws, req, userId);
         });
     });
@@ -89,25 +90,77 @@ function getUserId(cookieString){
     }
 }
 
-const typeMap = {
-    'join': GameDB.join,
-    'unjoin': GameDB.unjoin,
-    'imReady': GameDB.imReady,
-    'imNotReady': GameDB.imNotReady,
-    'playerNotReady': GameDB.playerNotReady,
-};
-
 function heartbeat() {
     this.isAlive = true;
 }
 
+function onClientClose(e) {
+}
+
 function connectionHandler(ws, req, userId) {
-    let sessionId = SessionStore.add(ws, userId);
+    let sessionId;
 
     ws.isAlive = true;
     ws.on('pong', heartbeat);
 
-    ws.on('message', function(e) {
+    ws.on('error', () => {
+        console.log("client connection error");
+    });
+
+    ws.on('close', () => {
+        console.log("client connection closed");
+    });
+
+    ws.on('message', onMessageInitial);
+
+    ws.send(JSON.stringify({ type: "connection/identify" }));
+
+    function onMessageInitial(e) {
+        console.log('received: "%s"', e);
+
+        let msg;
+        try {
+            msg = JSON.parse(e);
+        } catch (e) {
+            console.log("data not in json format: ", e);
+
+            return;
+        }
+
+        switch (msg.type) {
+            case "connection/sessionId":
+                //let sessionId;
+                if (msg.data && msg.data.sessionId) {
+                    sessionId = SessionStore.update(msg.data.sessionId, ws, userId);
+                    ws.send(JSON.stringify({
+                        type: "error/invalidSessionId",
+                        data: { sessionId: sessionId },
+                    }));
+                } else {
+                    // create an id and assign it to the client
+                    sessionId = SessionStore.add(ws, userId);
+                    ws.send(JSON.stringify({
+                        type: "connection/assignSessionId",
+                        data: { sessionId: sessionId },
+                    }));
+                }
+
+                console.log("sessionId:", sessionId);
+
+                if (sessionId) {
+                    ws.on('message', onMessage);
+                    break;
+                }
+
+                // else fall through
+            default:
+                console.log("connection session id response not valid");
+                // respond with helpfull info about how to connect
+                break;
+        }
+    }
+
+    function onMessage(e) {
         console.log('received: "%s"', e);
 
         let msg;
@@ -149,10 +202,24 @@ function connectionHandler(ws, req, userId) {
                 break;
 
             case "requestStartGame":
-                console.log("lets get this party started");
                 // set a player to not ready
                 GameDB.requestStartGame(sessionId);
                 break;
+
+            case "connection/sessionId":
+                if (msg.data && msg.data.sessionId) {
+                    // update the session information to match this connection
+                    console.log("has id:", msg.data.sessionId);
+                } else {
+                    // create an id and assign it to the client
+                    let willbesnsnid;
+                    let sessionId = SessionStore.add(ws, userId);
+                }
+
+
+                break;
+            default:
+                break;
         }
-    });
+    }
 }
