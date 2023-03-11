@@ -4,45 +4,17 @@ import SessionStore, { getUniqueId } from "./SessionStore.js";
 
 let socketIds = {};
 
-// TODO: This needs to be upgraded to track connections per room, track who is
-//       connected with which ws and who has joined which rooms
-
-function sendJoinResult(ws, grant) {
-    let msg = { type: grant ? "join/grant" : "join/deny" };
-
-    ws.send(JSON.stringify(msg));
-}
-
-function sendAddPlayer(ws, player) {
-    ws.send(JSON.stringify({
-        type: "lobby/addPlayer",
-        data: { name: player.name, ready: player.ready }
-    }));
-}
-
-function sendPlayerReadyStatus(ws, playerId, ready) {
-    ws.send(JSON.stringify({
-        type: ready ? "lobby/setPlayerReady" : "lobby/setPlayerNotReady",
-        data: { name: playerId }
-    }));
-}
-
-function joinGame(ws, gameId, sessionId, userId, name) {
-    // you must try to unjoin from the last game if present
-    GameDB.unjoin(sessionId);
-
-    // try to join the requested game
-    const granted = GameDB.join(userId, gameId, sessionId, name);
-
-    // respond on the socket with the join results
-    // TODO: make sure to send the full state
-    sendJoinResult(ws, granted);
-
-    // let everyone in the room know that you joined
-    if (granted) {
-        sendAddPlayer(ws, msg.data)
-    }
-}
+/*
+ * The purpose of the socket server is to setup a connection, and do everything
+ *
+ * The connection process is a mix of standard websocket connection combined
+ * with a service specific handshake. the client sends an establish session
+ * message that includes a sessionId if the client has one.
+ *
+ * The server will then respond with a sync message that informs the client what
+ * state they are in. either they are not subscribed to a game/room, or they
+ * need a full state update regarding the game/room they are subscribed to.
+ */
 
 export default function SocketServer(httpServer) {
     console.log("...setting up the socket server... ");
@@ -97,25 +69,45 @@ function heartbeat() {
 function onClientClose(e) {
 }
 
+/*
+ * handle each new connection.
+ *
+ * set up a heartbeat
+ * set up error handler
+ * set up close cleanup handler
+ * set up initial handshake handler on each message
+ *
+ * once the handshake is complete, it will replace onmessage with a handler
+ */
 function connectionHandler(ws, req, userId) {
+    function _send(msg) {
+        ws.send(JSON.stringify(msg));
+    }
+
     let sessionId;
 
+    // setup the heartbeat logic
     ws.isAlive = true;
     ws.on('pong', heartbeat);
 
+    // setup the error handler
     ws.on('error', () => {
         console.log("client connection error");
     });
 
+    // setup the cleanup close handler
     ws.on('close', () => {
+        // you will need to mark the session as disconnected
         console.log("client connection closed");
+
+        // TODO: ocassionally cleanup stale sessions
     });
 
-    ws.on('message', onMessageInitial);
+    ws.on('message', onMessageRouter);
 
-    ws.send(JSON.stringify({ type: "connection/identify" }));
+    //ws.send(JSON.stringify({ type: "connection/identify" }));
 
-    function onMessageInitial(e) {
+    function onMessageRouter(e) {
         console.log('received: "%s"', e);
 
         let msg;
@@ -123,59 +115,73 @@ function connectionHandler(ws, req, userId) {
             msg = JSON.parse(e);
         } catch (e) {
             console.log("data not in json format: ", e);
+            _send({ type: "error/jsonParseError"})
 
             return;
         }
 
+        sessionId ? onMessage(msg) : onHandshake(msg);
+    }
+
+    /*
+     * the handshake handler is responsible for session setup
+     *
+     * the server listens for a session/establish message
+     * if a session id exists, it must be verified
+     * if a session id does not exist, create a new session
+     *
+     * the server then responds with a sync message
+     *
+     * on success, the server resets the message handler to a real onmessage
+     */
+    // TODO I think that we should handle session mapping internally
+    function onHandshake(msg) {
+        console.log("handhsake", msg);
         switch (msg.type) {
-            case "connection/sessionId":
-                //let sessionId;
-                if (msg.data && msg.data.sessionId) {
-                    sessionId = SessionStore.update(msg.data.sessionId, ws, userId);
-                    ws.send(JSON.stringify({
-                        type: "error/invalidSessionId",
-                        data: { sessionId: sessionId },
-                    }));
+            case "session/establish":
+                // TODO what do we do if the sessionId does not exist?
+
+                console.log("session/establish:", msg.sessionId);
+
+                if (msg.sessionId) {
+                    sessionId = SessionStore.update(msg.sessionId, ws, userId);
+
+                    if (!sessionId) {
+                        _send({ type: "error/invalidSessionId" });
+                        return;
+                    }
                 } else {
                     // create an id and assign it to the client
                     sessionId = SessionStore.add(ws, userId);
-                    ws.send(JSON.stringify({
-                        type: "connection/assignSessionId",
-                        data: { sessionId: sessionId },
-                    }));
                 }
 
-                console.log("sessionId:", sessionId);
+                // on success we need to send a sync message with current state
+                _send({
+                    type: "connection/sync",
+                    data: {
+                        ...SessionStore.getSyncState(sessionId),
+                        sessionId: sessionId,
+                    },
+                });
 
-                if (sessionId) {
-                    ws.on('message', onMessage);
-                    break;
-                }
-
-                // else fall through
+                return;
             default:
                 console.log("connection session id response not valid");
+
                 // respond with helpfull info about how to connect
-                break;
+                _send({ type: "error/sessionNotEstablished" });
+                return;
         }
     }
 
-    function onMessage(e) {
-        console.log('received: "%s"', e);
-
-        let msg;
-        try {
-            msg = JSON.parse(e);
-        } catch (e) {
-            console.log("data not in json format: ", e);
-
-            return;
-        }
-
+    function onMessage(msg) {
+        console.log("messagge");
         switch (msg.type) {
             case "join":
+                // make sure that everything is present
+
                 // join a user and session to a game
-                GameDB.join(sessionId, msg.data.gameId, msg.data.name);
+                GameDB.join(sessionId, msg?.data?.gameId, msg?.data?.name);
                 break;
 
             case "unjoin":
@@ -216,10 +222,55 @@ function connectionHandler(ws, req, userId) {
                     let sessionId = SessionStore.add(ws, userId);
                 }
 
-
                 break;
             default:
                 break;
         }
     }
 }
+
+
+
+
+
+
+
+
+
+function sendJoinResult(ws, grant) {
+    let msg = { type: grant ? "join/grant" : "join/deny" };
+
+    ws.send(JSON.stringify(msg));
+}
+
+function sendAddPlayer(ws, player) {
+    ws.send(JSON.stringify({
+        type: "lobby/addPlayer",
+        data: { name: player.name, ready: player.ready }
+    }));
+}
+
+function sendPlayerReadyStatus(ws, playerId, ready) {
+    ws.send(JSON.stringify({
+        type: ready ? "lobby/setPlayerReady" : "lobby/setPlayerNotReady",
+        data: { name: playerId }
+    }));
+}
+
+function joinGame(ws, gameId, sessionId, userId, name) {
+    // you must try to unjoin from the last game if present
+    GameDB.unjoin(sessionId);
+
+    // try to join the requested game
+    const granted = GameDB.join(userId, gameId, sessionId, name);
+
+    // respond on the socket with the join results
+    // TODO: make sure to send the full state
+    sendJoinResult(ws, granted);
+
+    // let everyone in the room know that you joined
+    if (granted) {
+        sendAddPlayer(ws, msg.data)
+    }
+}
+

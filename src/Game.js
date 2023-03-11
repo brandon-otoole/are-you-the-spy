@@ -20,8 +20,8 @@ function Game(props) {
     useEffect(() => {
         wsConnect("ws://" + config.host + "/ws");
         wsMessage({
-            "type": "join",
-            "data": {
+            type: "join",
+            data: {
                 gameId: gameId,
                 name: localStorage.getItem("name")
             }

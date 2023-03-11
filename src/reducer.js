@@ -10,6 +10,7 @@ const reducer = (state, action) => {
             };
 
         case 'join/grant':
+            console.log("join grant");
             return {
                 ...state,
                 game: {
@@ -78,7 +79,12 @@ const reducer = (state, action) => {
             };
 
         default:
-            console.log("missed message:", action);
+            if (action.type.slice(0, 8) === "@@redux/") {
+                // do nothing
+            } else {
+                console.log("missed message:", action);
+            }
+
             return {
                 ...state,
             };

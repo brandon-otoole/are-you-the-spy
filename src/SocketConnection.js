@@ -8,6 +8,8 @@ class SocketConnection {
         this.userLifecycle = lifecycle;
         this.msgQueue = [];
 
+        this.joined = false;
+
         this.keepAlive = true;
         this.retryInterval = 1000;
         this.reconnectTimer = null;
@@ -45,7 +47,7 @@ class SocketConnection {
 
         this.ws = new WebSocket(this.host);
         this.ws.onerror = this.onError.bind(this);
-        this.ws.onmessage = this.onMessage.bind(this);
+        this.ws.onmessage = this.onSession.bind(this);
         this.ws.onclose = this.onClose.bind(this);
         this.ws.onopen = this.onOpen.bind(this);
     }
@@ -59,23 +61,39 @@ class SocketConnection {
     }
 
     destroyed(e) {
-        //console.log("destroyed", this.id);
+        console.log("destroyed", this.id);
     }
 
     onOpen(e) {
-        //console.log("onOpen", this.id);
+        console.log("onOpen -- sessionId:", this.sessionId);
+        this._send({
+            type: "session/establish",
+            sessionId: this.sessionId,
+        });
+    }
+
+    onSession(e) {
+        const serverMessage = JSON.parse(e.data);
+
+        console.log("onSession==msg:", serverMessage);
+        this.sessionId = serverMessage?.data?.sessionId;
+        console.log("onSession", this.sessionId);
+
         this.retryInterval = 1000;
 
         for (const msg of this.msgQueue) {
+            console.log("delayed message:", msg);
             this._send(msg);
         }
         this.msgQueue.length = 0;
 
         this.userLifecycle.onOpen(e);
+
+        console.log("switch message handler");
+        this.ws.onmessage = this.onMessage.bind(this);
     }
 
     onMessage(e) {
-        //console.log("onMessage", this.id);
         this.userLifecycle.onMessage(e);
     }
 
@@ -112,6 +130,28 @@ class SocketConnection {
             //console.log("saving for later");
             this.msgQueue.push(msg);
         }
+    }
+
+    join(gameId) {
+        this.gameId = gameId;
+
+        console.log("join called:", gameId);
+
+        if (this.ws && this.ws.readyState === this.ws.OPEN) {
+            this._send({
+                "type": "join",
+                "data": {
+                    gameId: gameId,
+                    name: localStorage.getItem("name")
+                }
+            });
+        } else {
+            // joining will have to happen later
+        }
+    }
+
+    unjoin() {
+        this.gameId = null;
     }
 
     close() {

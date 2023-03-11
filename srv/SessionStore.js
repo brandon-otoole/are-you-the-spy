@@ -24,9 +24,15 @@ class SessionStore {
         return this.users[sessionId];
     }
 
+    getSyncState(sessionId) {
+        console.log("you need to get sync state");
+        return {};
+    }
+
     update(sessionId, ws, userId) {
         // don't allow clients to specify their own session info
         if (!(sessionId in this.sessions) || !(sessionId in this.users)) {
+            console.log("not allowing client to specify session info");
             return;
         }
 

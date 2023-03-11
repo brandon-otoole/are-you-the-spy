@@ -76,14 +76,17 @@ class GameDB {
     }
 
     join(sessionId, gameId, name) {
+        console.log(sessionId, ": join 0");
         if (!this.contains(gameId)) { return false; }
 
+        console.log(sessionId, ": join 1");
         //this.unjoin(sessionId);
 
         // update the session to gameId
         this.sessionToGame[sessionId] = gameId;
         const game = this.games[gameId];
 
+        console.log(sessionId, ": join 2");
         // update the game
         let player = game.addSession(sessionId, name);
 

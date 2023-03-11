@@ -13,6 +13,7 @@ import {
 import './style.css';
 
 import WSMiddleware from './WSMiddleware';
+import LoggerMiddleware from './LoggerMiddleware';
 
 import App from './App';
 import Join from './Join';
@@ -23,7 +24,7 @@ import Setup from './Setup';
 
 import ErrorPage from './ErrorPage';
 
-const middleware = [ WSMiddleware ];
+const middleware = [ LoggerMiddleware, WSMiddleware ];
 const store = createStore(
     reducer,
     { game: { players: [] } },
@@ -84,12 +85,22 @@ const router = createBrowserRouter([
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+/* */
+  <React.StrictMode>
+   <Provider store = {store}>
+    <RouterProvider router={router}/>
+   </Provider>
+    /* */
+  </React.StrictMode>
+);
+
+/*
   <React.StrictMode>
    <Provider store = {store}>
     <RouterProvider router={router}/>
    </Provider>
   </React.StrictMode>
-);
+*/
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
