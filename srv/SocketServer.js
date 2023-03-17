@@ -139,12 +139,15 @@ function connectionHandler(ws, req, userId) {
         console.log("handhsake", msg);
         switch (msg.type) {
             case "session/establish":
+                let ids;
+
                 // TODO what do we do if the sessionId does not exist?
 
                 console.log("session/establish:", msg.sessionId);
 
                 if (msg.sessionId) {
-                    sessionId = SessionStore.update(msg.sessionId, ws, userId);
+                    ids = SessionStore.update(msg.sessionId, ws, userId);
+                    sessionId = ids.sessionId;
 
                     if (!sessionId) {
                         _send({ type: "error/invalidSessionId" });
@@ -152,7 +155,8 @@ function connectionHandler(ws, req, userId) {
                     }
                 } else {
                     // create an id and assign it to the client
-                    sessionId = SessionStore.add(ws, userId);
+                    ids = SessionStore.add(ws, userId);
+                    sessionId = ids.sessionId;
                 }
 
                 // on success we need to send a sync message with current state
@@ -160,7 +164,7 @@ function connectionHandler(ws, req, userId) {
                     type: "connection/sync",
                     data: {
                         ...SessionStore.getSyncState(sessionId),
-                        sessionId: sessionId,
+                        sessionId: ids.clientSessionId,
                     },
                 });
 
