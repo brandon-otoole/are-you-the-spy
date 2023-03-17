@@ -23,9 +23,6 @@ class GameDB {
             this.games[id] = GameObj.factory(game);
         }
 
-        // a session is strictly tied to one user
-        this.sessionToUser = {};
-
         // a session is strictly tied to one game
         this.sessionToGame = {};
     }
@@ -50,12 +47,12 @@ class GameDB {
     }
 
     async close() {
-        for (let game of Object.values(this.games)) {
-            delete game["sessions"];
-            delete game.sessions;
-            delete game["userToSessions"];
-            delete game.userToSessions;
-        }
+        //for (let game of Object.values(this.games)) {
+            //delete game["sessions"];
+            //delete game.sessions;
+            //delete game["userToSessions"];
+            //delete game.userToSessions;
+        //}
 
         let data = "export default " + JSON.stringify(this.games, null, 4);
 

@@ -45,6 +45,10 @@ const WSMiddleware = () => {
                 connection = null;
                 break;
 
+            case 'WS_TEST_BREAK':
+                connection.testBreak();
+                break;
+
             case 'WS_DISCONNECTED':
                 // this is a pretty worthless event. set state on disconnect
                 break;

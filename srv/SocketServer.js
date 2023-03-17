@@ -170,7 +170,7 @@ function connectionHandler(ws, req, userId) {
 
                 return;
             default:
-                console.log("connection session id response not valid");
+                console.log("connection session id response not valid", msg);
 
                 // respond with helpfull info about how to connect
                 _send({ type: "error/sessionNotEstablished" });

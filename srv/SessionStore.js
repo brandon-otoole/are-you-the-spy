@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import fs, { promises as fsPromises } from "fs";
 
 class SessionStore {
     constructor() {
@@ -41,11 +42,36 @@ class SessionStore {
         return {};
     }
 
+    // when a new client is seen for the first time
+    add(ws, userId) {
+        // generate a unique client and session id
+        let sessionId = getUniqueId(this.sessions);
+        let clientSessionId = getUniqueId(this.userAndClientToSession, userId);
+
+        // combine the userId and sessionId and lookup a sessionId
+        let userClientKey = userId + ":" + clientSessionId;
+        console.log("add", userClientKey);
+
+        // map the sessionid to the ws
+        this.sessions[sessionId] = ws;
+
+        // map the client and session id for later reconnect attempts
+        this.userAndClientToSession[userClientKey] = sessionId;
+
+        // store the user for this session in case it is needed later
+        this.users[sessionId] = userId;
+
+        // pass back the clientSession to indicate success
+        console.log("add:", clientSessionId, sessionId);
+        return { clientSessionId, sessionId };
+    }
+
     // when a client would like to reconnect
     // TODO change sessionId to clientSessionId
     update(clientSessionId, ws, userId) {
         // combine the userId and sessionId and lookup a sessionId
         let userClientKey = userId + ":" + clientSessionId;
+        console.log("update", userClientKey);
 
         // look up the user's active sessions for this clientSessionId
         let sessionId = this.userAndClientToSession[userClientKey];
@@ -66,29 +92,6 @@ class SessionStore {
         this.sessions[sessionId] = ws;
 
         // pass back the clientSession to indicate success
-        return { clientSessionId, sessionId };
-    }
-
-    // when a new client is seen for the first time
-    add(ws, userId) {
-        // generate a unique client and session id
-        let sessionId = getUniqueId(this.sessions);
-        let clientSessionId = getUniqueId(this.userAndClientToSession, userId);
-
-        // combine the userId and sessionId and lookup a sessionId
-        let userClientKey = userId + ":" + clientSessionId;
-
-        // map the sessionid to the ws
-        this.sessions[sessionId] = ws;
-
-        // map the client and session id for later reconnect attempts
-        this.userAndClientToSession[clientSessionId] = sessionId;
-
-        // store the user for this session in case it is needed later
-        this.users[sessionId] = userId;
-
-        // pass back the clientSession to indicate success
-        console.log("add:", clientSessionId, sessionId);
         return { clientSessionId, sessionId };
     }
 

@@ -39,7 +39,7 @@ class SocketConnection {
     }
 
     setup() {
-        //console.log("setup", this.id);
+        console.log("setup", this.id);
         if (this.ws !== null) {
             console.error("double connecting a WS");
             return;
@@ -58,6 +58,11 @@ class SocketConnection {
         this.ws.onmessage = this.destroyed.bind(this);
         this.ws.onclose = this.destroyed.bind(this);
         this.ws.onopen = this.destroyed.bind(this);
+    }
+
+    testBreak() {
+        console.log("testing a broken connectikon");
+        this.ws.close();
     }
 
     destroyed(e) {
@@ -98,7 +103,7 @@ class SocketConnection {
     }
 
     onClose(e) {
-        //console.log("onClose", this.id);
+        console.log("onClose", this.id);
         this.userLifecycle.onClose(e);
 
         this.ws = null;
@@ -106,7 +111,7 @@ class SocketConnection {
         // setup the reconnection
         //console.log("keepAlive:", this.keepAlive);
         if (this.keepAlive) {
-            //console.log("setting up a new connection in:", this.retryInterval, this.ws);
+            console.log("setting up a new connection in:", this.retryInterval, this.ws);
             this.reconnectTimer = setTimeout(this.setup.bind(this), this.retryInterval);
             this.retryInterval = Math.min(10000, 2*this.retryInterval);
         }
