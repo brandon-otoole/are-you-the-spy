@@ -38,15 +38,8 @@ export default function SocketServer(httpServer) {
     httpServer.on('upgrade', function upgrade(req, socket, head) {
         let userId = getUserId(req.headers.cookie);
 
-        if (!userId) {
-            console.log("NOT AUTHORIZED");
-            socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
-            socket.destroy();
-            return;
-        }
-
         wss.handleUpgrade(req, socket, head, function done(ws) {
-            wss.emit('connection', ws, req, userId);
+            wss.emit('connection', ws, req, userId || null);
         });
     });
 }
@@ -80,11 +73,17 @@ function onClientClose(e) {
  * once the handshake is complete, it will replace onmessage with a handler
  */
 function connectionHandler(ws, req, userId) {
+    console.log('handler:', userId);
+
     function _send(msg) {
         ws.send(JSON.stringify(msg));
     }
 
     let sessionId;
+
+    if (userId == null) {
+        _send({ type: "error/noUserError" });
+    }
 
     // setup the heartbeat logic
     ws.isAlive = true;
@@ -232,49 +231,3 @@ function connectionHandler(ws, req, userId) {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-function sendJoinResult(ws, grant) {
-    let msg = { type: grant ? "join/grant" : "join/deny" };
-
-    ws.send(JSON.stringify(msg));
-}
-
-function sendAddPlayer(ws, player) {
-    ws.send(JSON.stringify({
-        type: "lobby/addPlayer",
-        data: { name: player.name, ready: player.ready }
-    }));
-}
-
-function sendPlayerReadyStatus(ws, playerId, ready) {
-    ws.send(JSON.stringify({
-        type: ready ? "lobby/setPlayerReady" : "lobby/setPlayerNotReady",
-        data: { name: playerId }
-    }));
-}
-
-function joinGame(ws, gameId, sessionId, userId, name) {
-    // you must try to unjoin from the last game if present
-    GameDB.unjoin(sessionId);
-
-    // try to join the requested game
-    const granted = GameDB.join(userId, gameId, sessionId, name);
-
-    // respond on the socket with the join results
-    // TODO: make sure to send the full state
-    sendJoinResult(ws, granted);
-
-    // let everyone in the room know that you joined
-    if (granted) {
-        sendAddPlayer(ws, msg.data)
-    }
-}
-

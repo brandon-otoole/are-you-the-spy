@@ -13,6 +13,7 @@ export default function HttpServer() {
     expressApp.use(cookieParser());
 
     expressApp.use(function(req, res, next) {
+        console.log("user cookie middleware");
         let userId = req.cookies['userId'];
         userId = userId || crypto.randomBytes(16).toString('hex');
 

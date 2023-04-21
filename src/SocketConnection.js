@@ -77,8 +77,17 @@ class SocketConnection {
         });
     }
 
+    onUnauthenticated(e) {
+        console.log("you should authenticate");
+    }
+
     onSession(e) {
         const serverMessage = JSON.parse(e.data);
+
+        if (serverMessage.type == "error/noUserError") {
+            this.ws.onmessage = this.onUnauthenticated.bind(this);
+            return;
+        }
 
         console.log("onSession==msg:", serverMessage);
         this.sessionId = serverMessage?.data?.sessionId;
@@ -104,6 +113,7 @@ class SocketConnection {
 
     onClose(e) {
         console.log("onClose", this.id);
+        console.dir("onClose", this.id);
         this.userLifecycle.onClose(e);
 
         this.ws = null;
@@ -118,8 +128,7 @@ class SocketConnection {
     }
 
     onError(e) {
-        //console.log("onError", this.id);
-        //console.log("hello", "error", e);
+        console.dir(e.target);
         this.userLifecycle.onError(e);
     }
 

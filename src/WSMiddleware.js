@@ -25,7 +25,7 @@ const WSMiddleware = () => {
         },
 
         onError: e => {
-                console.error(e);
+                console.error(JSON.stringify(e));
         },
     });
 
