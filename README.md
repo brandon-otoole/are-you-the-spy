@@ -1,5 +1,5 @@
 # Who Is The Spy
-[](https://spy.indieraydev.com)
+https://spy.indieraydev.com
 
 Playing Who Is The Spy is as close to being a real spy as you ever want. Each round will have your heart pumping and your mind racing as you try to figure out, who is the spy? The catch is that it might just be you.
 
@@ -22,7 +22,7 @@ The other players must try to deduce who is the spy without letting them learn t
 ### Setup
 One player will need to create a room by visiting [spy.indieraydev.com](https://spy.indieraydev.com). Once the room is created, the creator will be redirected to the room at
 
-> https://spy.indieraydev.com/`[room-code]`
+> `https://spy.indieraydev.com/[room-code]`
 
 The new room url can be shared with the other players, or they can enter the `[room-code]` on the main page.
 
