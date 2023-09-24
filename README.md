@@ -1,70 +1,48 @@
-# Getting Started with Create React App
+# Who Is The Spy
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Playing Who Is The Spy is as close to being a real spy as you ever want. Each round will have your heart pumping and your mind racing as you try to figure out, who is the spy? The catch is that it might just be you.
 
-## Available Scripts
+> Note: This game is a work in progress. Since it started as a react and websocket proof of concept, not all functionality has been implemented yet.
 
-In the project directory, you can run:
+## Inspiration
+Who Is The Spy was a very popular game in China and resembles the desktop game, Spyfall (created by Alexandr Ushan). The game has even been used as a way to help foreign language students develop their vocabulary and basic conversational skills.
 
-### `npm start`
+This app aims to facilitate the setup and gameplay so that groups do not need to designate a moderator.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## How To Play
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Goal
+Each player will be given a secret word. All of the players' secret words match except for one.
 
-### `npm test`
+The player with the mismatched word is the spy, and must avoid detection or uncover the secret.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The other players must try to deduce who is the spy without letting them learn the.
 
-### `npm run build`
+### Setup
+One player will need to create a room by visiting spy.indieraydev.com. Once the room is created, the creator will be redirected to the room at
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+>``https://spy.indieraydev.com/[room-code]``
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The new room url can be shared with the other players, or they can enter the [room-code] on the main page.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+If it is your first time visiting spy.indieraydev.com, you will be asked to register by entering your name. This is necessary so that the other players can identify who has joined the game, who they are voting against, and can help keep track of who has been eliminated in each round.
 
-### `npm run eject`
+Before the game begins, everyone who wishes to play must mark themselves "ready".
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Once two or more players are "ready", the players can choose to start the game. Please be careful nd only start the game once everyone has had a chance to sign up and mark themselves "ready". Anyone in the lobby who has not been marked "ready" will not be given a secret word, and will be listed as a spectator.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+> Note: The app only includes functinality up to this point. Secret word generation and role assignment must be implemented before the game is playable.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Gameplay
+Once the game starts, each player can discretely check their secret word. This word must not be shared.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Each player takes turns making statements as clues about their word. The statements must be factual of the word they posess. As a general strategy, clues should be specific enough to signal to others that you are not a spy, but be general enough to not help the spy. ... But don't be too general, or everyone will suspect you!
 
-## Learn More
+Once all players have given clues, players are given two options.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1) A player who thinks they are the spy may attempt to guess the real secret word.
+2) Vote for one other player to be eliminated.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+If the spy correctly guesses the secret, they win. However, if they are wrong, they lose and the game end. If a non-spy guesses, they are automatically eliminated. If the spy does not make a guess, then the player with the most votes is eliminated. If there is a tie, no players are eliminated.
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Each round continues until either the spy is eliminated (spy loses), or there are only two players left (spy wins).
