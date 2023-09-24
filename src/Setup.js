@@ -34,7 +34,7 @@ async function nameChanged(name) {
         };
 
         //fetch("http://spygame.lan/api/login", options)
-        fetch("http://" + config.host + "/api/login", options)
+        fetch("https://" + config.host + "/api/login", options)
             .then((res) => {
                 if (!res.ok) {
                     throw new Error('Network response was not OK');

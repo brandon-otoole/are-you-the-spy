@@ -56,7 +56,7 @@ export default function HttpServer() {
         let host = server.address().address;
         let port = server.address().port;
 
-        console.log('SpyGame Websocket listening: http://%s:%s', host, port);
+        console.log('SpyGame Websocket listening: //%s:%s', host, port);
     });
 
     return server;
