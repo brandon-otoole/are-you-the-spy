@@ -1,4 +1,5 @@
 # Who Is The Spy
+[](https://spy.indieraydev.com)
 
 Playing Who Is The Spy is as close to being a real spy as you ever want. Each round will have your heart pumping and your mind racing as you try to figure out, who is the spy? The catch is that it might just be you.
 
@@ -19,13 +20,13 @@ The player with the mismatched word is the spy, and must avoid detection or unco
 The other players must try to deduce who is the spy without letting them learn the.
 
 ### Setup
-One player will need to create a room by visiting spy.indieraydev.com. Once the room is created, the creator will be redirected to the room at
+One player will need to create a room by visiting [spy.indieraydev.com](https://spy.indieraydev.com). Once the room is created, the creator will be redirected to the room at
 
->``https://spy.indieraydev.com/[room-code]``
+> https://spy.indieraydev.com/`[room-code]`
 
-The new room url can be shared with the other players, or they can enter the [room-code] on the main page.
+The new room url can be shared with the other players, or they can enter the `[room-code]` on the main page.
 
-If it is your first time visiting spy.indieraydev.com, you will be asked to register by entering your name. This is necessary so that the other players can identify who has joined the game, who they are voting against, and can help keep track of who has been eliminated in each round.
+If it is your first time visiting [spy.indieraydev.com](https://spy.indieraydev.com), you will be asked to register by entering your name. This is necessary so that the other players can identify who has joined the game, who they are voting against, and can help keep track of who has been eliminated in each round.
 
 Before the game begins, everyone who wishes to play must mark themselves "ready".
 
