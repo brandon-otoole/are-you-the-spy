@@ -1,43 +1,53 @@
-import { useState, setState } from "react";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 
+import { connect } from 'react-redux'
+
+import Disconnect from "./Disconnect.js";
+
 import PreGameTable from "./PreGameTable.js";
 import PlayerReady from "./PlayerReady.js";
 
-function createData(record) {
-    const ready = record.ready ? "✔" : "";
-    return { id: record.id, status:ready, name:record.name, remove:"x" };
-}
+const S2P = (state) => {
+   return {
+      startGameEnabled: state.game.enabled,
+   };
+};
+
+const D2P = (dispatch) => {
+   return {
+       requestStartGame: () => dispatch({
+           type: "WS_MESSAGE",
+           msg:{ type: "requestStartGame" }
+       }),
+   };
+};
 
 function PreGame(props) {
-    let rows = props.players.map(x => createData(x));
-
-    //const [playerReady, setPlayerReady] = useState(false);
-    const playerReady = props.ready;
-    const setPlayerReady = props.handler;
-    const startGameEnabled = props.startGameEnabled;
+    const { startGameEnabled, requestStartGame } = props;
 
     return (
         <Box sx={{ minWidth: 275 }}>
           <Card variant="outlined">
             <CardContent>
+                <Disconnect />
               <div>
                 <h2>Is it you?</h2>
               </div>
 
               Players
               <div align="center">
-                <PreGameTable rows={rows} />
+                <PreGameTable />
               </div>
             </CardContent>
             <CardActions>
-              <PlayerReady ready={playerReady} handler={setPlayerReady}/>
+              <PlayerReady />
 
-              <Button variant="contained" disabled={!startGameEnabled}>
+              <Button variant="contained" disabled={!startGameEnabled}
+                      onClick={requestStartGame}>
                 Start Game
               </Button>
             </CardActions>
@@ -46,4 +56,4 @@ function PreGame(props) {
     );
 }
 
-export default PreGame;
+export default connect(S2P, D2P)(PreGame);

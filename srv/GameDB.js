@@ -18,15 +18,10 @@ class GameDB {
         // key: gameId
         // value: game object
         this.games = {};
-        this.games["1234"] = new GameObj("1234");
-        this.games["asdf"] = new GameObj("asdf");
         // TODO: we need to find a better way to load in the game data
         for (const [id, game] of Object.entries(game_records)) {
-            this.games[id] = new GameObj(id);
+            this.games[id] = GameObj.factory(game);
         }
-
-        // a session is strictly tied to one user
-        this.sessionToUser = {};
 
         // a session is strictly tied to one game
         this.sessionToGame = {};
@@ -52,6 +47,13 @@ class GameDB {
     }
 
     async close() {
+        //for (let game of Object.values(this.games)) {
+            //delete game["sessions"];
+            //delete game.sessions;
+            //delete game["userToSessions"];
+            //delete game.userToSessions;
+        //}
+
         let data = "export default " + JSON.stringify(this.games, null, 4);
 
         console.log(data);
@@ -71,20 +73,25 @@ class GameDB {
     }
 
     join(sessionId, gameId, name) {
+        console.log(sessionId, ": join 0");
         if (!this.contains(gameId)) { return false; }
 
+        console.log(sessionId, ": join 1");
         //this.unjoin(sessionId);
 
         // update the session to gameId
         this.sessionToGame[sessionId] = gameId;
         const game = this.games[gameId];
 
+        console.log(sessionId, ": join 2");
         // update the game
         let player = game.addSession(sessionId, name);
 
         let data = {
             myPlayerId: player.id,
-            state: game.state()
+            role: 'server static',
+            state: game.state(),
+            started: game.isStarted(),
         }
 
         SessionStore.send(sessionId, "join/grant", data);
@@ -99,11 +106,11 @@ class GameDB {
         // find out what game this is for
         const gameId = this.sessionToGame[sessionId];
         const game = this.games[gameId];
-        game.removePlayer(userId);
+        game?.removePlayer(userId);
 
         // remove stuff
-        const player = game.players[userId];
-        delete game.players[userId];
+        const player = game?.players[userId];
+        delete game?.players[userId];
     }
 
     imReady(sessionId) {
@@ -112,9 +119,9 @@ class GameDB {
         const game = this.games[gameId];
 
         // find the player from the userId
-        let playerId = game.userToPlayer[userId];
+        let playerId = game?.userToPlayer[userId];
 
-        game.setPlayerReady(playerId, true);
+        game?.setPlayerReady(playerId, true);
     }
 
     imNotReady(sessionId) {
@@ -123,19 +130,34 @@ class GameDB {
         const game = this.games[gameId];
 
         // find the player from the userId
-        let playerId = game.userToPlayer[userId];
+        let playerId = game?.userToPlayer[userId];
 
-        game.setPlayerReady(playerId, false);
+        game?.setPlayerReady(playerId, false);
     }
 
-    playerNotReady(sessionId, playerId) {
+    playerNotReady(sessionId) {
         // update the player state to not ready
         // broadcast to all sockets
     }
 
+    requestStartGame(sessionId) {
+        let userId = SessionStore.getUser(sessionId);
+        const gameId = this.sessionToGame[sessionId];
+        const game = this.games[gameId];
+
+        game?.requestStartGame(userId, sessionId);
+    }
+
+    requestSecret(sessionId) {
+        let userId = SessionStore.getUser(sessionId);
+        const gameId = this.sessionToGame[sessionId];
+        const game = this.games[gameId];
+
+        game?.requestSecret(userId, sessionId);
+    }
+
     getPlayer(sessionId) {
         // TODO: get player object for sessionId
-        // 
         console.log("get player object for :", sessionId);
         return {};
     }

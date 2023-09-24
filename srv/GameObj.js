@@ -4,9 +4,22 @@ import PlayerObj from "./PlayerObj.js";
 import SessionStore from "./SessionStore.js";
 
 class GameObj {
+    static factory(game) {
+        let newGame = new GameObj(game.id);
+
+        newGame.started = game.started;
+        newGame.players = game.players;
+        newGame.userToPlayer = game.userToPlayer;
+
+        return newGame;
+    }
+
     constructor(id) {
         // the gameId
         this.id = id;
+
+        // flag to track if the game is started
+        this.started = false;
 
         // this is strictly for state tracking
         this.players = {};
@@ -23,6 +36,14 @@ class GameObj {
         this.userToPlayer = {};
 
         this.userToSessions = {};
+    }
+
+    isStarted() {
+        return this.started;
+    }
+
+    enableStart() {
+        return this.getReadyCount() >= 2;
     }
 
     getReadyCount() {
@@ -105,6 +126,10 @@ class GameObj {
 
     setPlayerReady(playerId, ready) {
         console.log("OBJ set ready: ", playerId, ready);
+        if (this.players[playerId].ready == ready) {
+            return;
+        }
+
         this.players[playerId].ready = ready;
 
         this.broadcast("lobby/playerReady", {
@@ -113,8 +138,61 @@ class GameObj {
         });
 
         // tell the clients if game start requirements have been met
-        const enableStart = this.getReadyCount() >= 2;
-        this.broadcast("lobby/enableStart", { enabled: enableStart });
+        this.broadcast("lobby/enableStart", { enabled: this.enableStart() });
+    }
+
+    requestStartGame(userId, sessionId, playerId) {
+        this.started = true;
+
+        // check if the requesting user is subscribed to this game
+        //TODO
+
+        // check if the requesting player is ready
+        //TODO
+
+        // check if the game has enough people
+        //TODO
+
+        // run the logic on the new game
+
+        // create a list of players who are marked as ready
+        let characterIds = Object.values(this.players)
+            .filter(x => x.ready)
+            .map(x => x.id);
+
+        // randomly pick a main character
+        let theOne = Math.floor(Math.random() * characterIds.length);
+
+        // randomly pick a different character from the remaining players
+        let theOther;
+        do {
+            theOther = Math.floor(Math.random() * characterIds.length);
+        } while (theOther == theOne)
+
+        // randomly pick a player to be the spy
+        let theSpy = Math.floor(Math.random() * characterIds.length);
+
+        this.theOne = characterIds[theOne];
+        this.theOther = characterIds[theOther];
+        this.theSpy = characterIds[theSpy];
+
+        // update the private player info
+
+        // let players know a game has started
+        this.broadcast('game/start', { role: 'pending' });
+    }
+
+    requestSecret(userId, sessionId) {
+        let data = { role: 'spectator' };
+
+        let player = userToPlayer[userId];
+        if (player.ready && player.id == this.theSpy) {
+            data.role = this.theOther;
+        } else if (player.ready) {
+            data.role = this.theOne;
+        }
+
+        SessionStore.send(sessionId, "game/secret", data);
     }
 
     state() {

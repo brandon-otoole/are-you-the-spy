@@ -67,4 +67,3 @@ async function nameChanged(name) {
 }
 
 export default Setup;
-

@@ -1,5 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { createStore, applyMiddleware, compose } from 'redux';
+import { Provider } from 'react-redux';
+
+import reducer from "./reducer.js";
 
 import {
     createBrowserRouter,
@@ -8,14 +12,26 @@ import {
 
 import './style.css';
 
+import WSMiddleware from './WSMiddleware';
+import LoggerMiddleware from './LoggerMiddleware';
+
 import App from './App';
 import Join from './Join';
-import Game, { gameLoader } from './Game';
+import Game from './Game';
 import New from './New';
 import Home from './Home';
 import Setup from './Setup';
 
 import ErrorPage from './ErrorPage';
+
+const middleware = [ LoggerMiddleware, WSMiddleware ];
+const store = createStore(
+    reducer,
+    { game: { players: [] } },
+    compose(
+        applyMiddleware(...middleware),
+    )
+)
 
 const RequireAuth: FC<{ children: React.ReactElement }> = ({ children }) => {
     const userIsLogged = localStorage.getItem('isSetup');
@@ -43,8 +59,6 @@ const router = createBrowserRouter([
                     <RequireAuth>
                       <Game />
                     </RequireAuth>
-                ,
-                loader: gameLoader,
             },
             {
                 path: "join",
@@ -72,13 +86,19 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+   <Provider store = {store}>
     <RouterProvider router={router}/>
+   </Provider>
   </React.StrictMode>
 );
 
-  //<React.StrictMode>
-  //  { <RouterProvider router={router}/> }
-  //</React.StrictMode>
+/*
+  <React.StrictMode>
+   <Provider store = {store}>
+    <RouterProvider router={router}/>
+   </Provider>
+  </React.StrictMode>
+*/
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
