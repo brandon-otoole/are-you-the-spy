@@ -15,6 +15,7 @@ const reducer = (state, action) => {
                 ...state,
                 game: {
                     myPlayerId: action.data.myPlayerId,
+                    playerRole: action.data.role,
                     started: action.data.started,
                     players: Object.values(action.data.state),
                 },

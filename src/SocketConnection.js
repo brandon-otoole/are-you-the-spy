@@ -1,4 +1,3 @@
-
 class SocketConnection {
     constructor(host, lifecycle) {
         //this.id = Math.floor(Math.random()*1000);
@@ -79,6 +78,14 @@ class SocketConnection {
 
     onUnauthenticated(e) {
         console.log("you should authenticate");
+        // if you got here then you dont have a user name
+
+        // clear and rerun the workflow for a new user.
+
+        // if there is no name, redirect the user to setup
+
+        // always make at least on server request
+        window.location.href = '/setup';
     }
 
     onSession(e) {

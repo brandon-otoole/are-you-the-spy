@@ -89,6 +89,7 @@ class GameDB {
 
         let data = {
             myPlayerId: player.id,
+            role: 'server static',
             state: game.state(),
             started: game.isStarted(),
         }
@@ -139,12 +140,20 @@ class GameDB {
         // broadcast to all sockets
     }
 
-    requestStartGame(sessionId, playerId) {
+    requestStartGame(sessionId) {
         let userId = SessionStore.getUser(sessionId);
         const gameId = this.sessionToGame[sessionId];
         const game = this.games[gameId];
 
-        game?.requestStartGame(userId, sessionId, playerId);
+        game?.requestStartGame(userId, sessionId);
+    }
+
+    requestSecret(sessionId) {
+        let userId = SessionStore.getUser(sessionId);
+        const gameId = this.sessionToGame[sessionId];
+        const game = this.games[gameId];
+
+        game?.requestSecret(userId, sessionId);
     }
 
     getPlayer(sessionId) {

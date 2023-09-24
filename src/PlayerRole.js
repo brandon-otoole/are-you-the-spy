@@ -1,11 +1,13 @@
 import { useState } from "react";
 
+import { connect } from 'react-redux';
+
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 
 function PlayerRole(props) {
-    let playerRole = props.playerRole;
+    let { playerRole } = props;
 
     let [ready, setReadyState] = useState(false);
 
@@ -19,4 +21,19 @@ function PlayerRole(props) {
 
 }
 
-export default PlayerRole;
+const S2P = (state) => {
+   return {
+      playerRole: state.game.playerRole,
+   };
+};
+
+const D2P = (dispatch) => {
+   return {
+       requestSecret: () => dispatch({
+           type: "WS_MESSAGE",
+           msg: { type: "requestSecret" },
+       }),
+   };
+};
+
+export default connect(S2P, D2P)(PlayerRole);

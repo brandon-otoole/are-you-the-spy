@@ -215,6 +215,11 @@ function connectionHandler(ws, req, userId) {
                 GameDB.requestStartGame(sessionId);
                 break;
 
+            case "requestSecret":
+                // set a player to not ready
+                GameDB.requestSecret(sessionId);
+                break;
+
             case "connection/sessionId":
                 if (msg.data && msg.data.sessionId) {
                     // update the session information to match this connection

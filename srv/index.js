@@ -14,7 +14,6 @@ process.on('SIGINT', async function() {
     process.exit();
 });
 
-
 //console.log(GameDB.create());
 
 const httpServer = HttpServer();

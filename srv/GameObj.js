@@ -153,8 +153,46 @@ class GameObj {
         // check if the game has enough people
         //TODO
 
-        // broadcast to all sockets
-        this.broadcast("game/start", { role: "server defined role"});
+        // run the logic on the new game
+
+        // create a list of players who are marked as ready
+        let characterIds = Object.values(this.players)
+            .filter(x => x.ready)
+            .map(x => x.id);
+
+        // randomly pick a main character
+        let theOne = Math.floor(Math.random() * characterIds.length);
+
+        // randomly pick a different character from the remaining players
+        let theOther;
+        do {
+            theOther = Math.floor(Math.random() * characterIds.length);
+        } while (theOther == theOne)
+
+        // randomly pick a player to be the spy
+        let theSpy = Math.floor(Math.random() * characterIds.length);
+
+        this.theOne = characterIds[theOne];
+        this.theOther = characterIds[theOther];
+        this.theSpy = characterIds[theSpy];
+
+        // update the private player info
+
+        // let players know a game has started
+        this.broadcast('game/start', { role: 'pending' });
+    }
+
+    requestSecret(userId, sessionId) {
+        let data = { role: 'spectator' };
+
+        let player = userToPlayer[userId];
+        if (player.ready && player.id == this.theSpy) {
+            data.role = this.theOther;
+        } else if (player.ready) {
+            data.role = this.theOne;
+        }
+
+        SessionStore.send(sessionId, "game/secret", data);
     }
 
     state() {
