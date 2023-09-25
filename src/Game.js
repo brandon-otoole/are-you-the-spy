@@ -18,7 +18,7 @@ function Game(props) {
     const { game, wsConnect, wsMessage, wsDisconnect } = props;
 
     useEffect(() => {
-        wsConnect("wss://" + config.host + "/ws");
+        wsConnect(config.socketUrl + "/ws");
         wsMessage({
             type: "join",
             data: {

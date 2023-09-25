@@ -51,7 +51,7 @@ function Home() {
             body: JSON.stringify(body),
         };
 
-        fetch("https://" + config.host+ "/api/game", options)
+        fetch(config.httpUrl + "/api/game", options)
             .then((res) => {
                 if (!res.ok) {
                     throw new Error('Network response was not OK');
