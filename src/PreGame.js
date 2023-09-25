@@ -6,8 +6,6 @@ import CardContent from "@mui/material/CardContent";
 
 import { connect } from 'react-redux'
 
-import Disconnect from "./Disconnect.js";
-
 import PreGameTable from "./PreGameTable.js";
 import PlayerReady from "./PlayerReady.js";
 
@@ -33,7 +31,6 @@ function PreGame(props) {
         <Box sx={{ minWidth: 275 }}>
           <Card variant="outlined">
             <CardContent>
-                <Disconnect />
               <div>
                 <h2>Is it you?</h2>
               </div>
