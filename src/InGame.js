@@ -43,7 +43,10 @@ function InGame(props) {
           <Card variant="outlined">
             <CardContent>
               <div>
-                <h2>In Game Table</h2>
+                <h2>Game in progress</h2>
+              </div>
+              <div>
+                <h4>Are you the spy?</h4>
               </div>
 
               Players

@@ -70,6 +70,8 @@ const router = createBrowserRouter([
     }
 ]);
 
+//document.title = "Who Is The Spy? | play the ultimate spy game with friends";
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

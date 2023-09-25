@@ -32,7 +32,7 @@ function PreGame(props) {
           <Card variant="outlined">
             <CardContent>
               <div>
-                <h2>Is it you?</h2>
+                <h2>Lobby</h2>
               </div>
 
               Players
