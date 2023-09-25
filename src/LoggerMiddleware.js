@@ -1,5 +1,5 @@
 const LoggerMiddleware = store => next => action => {
-    console.log("MWM", action);
+    console.debug("MWD", action);
 
     return next(action);
 };

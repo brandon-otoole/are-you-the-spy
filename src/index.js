@@ -4,6 +4,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 
 import reducer from "./reducer.js";
+import config from "./config.js";
 
 import {
     createBrowserRouter,
@@ -22,7 +23,12 @@ import Setup from './Setup';
 
 import ErrorPage from './ErrorPage';
 
-const middleware = [ LoggerMiddleware, WSMiddleware ];
+const middleware = []
+if (config.debug) {
+    middleware.push(LoggerMiddleware);
+}
+middleware.push(WSMiddleware);
+
 const store = createStore(
     reducer,
     { game: { players: [] } },

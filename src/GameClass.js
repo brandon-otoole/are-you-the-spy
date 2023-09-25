@@ -1,13 +1,15 @@
 import React from "react";
 import GameDisplay from './GameDisplay';
 
+import debug from "./debugLogger.js";
+
 export function gameLoader(params) {
     return params
 };
 
 class GameClass {
     constructor() {
-        console.log("HELLO WORLD")
+        debug.log("HELLO WORLD")
     }
 
     render() {
@@ -20,7 +22,7 @@ class GameClass {
 
     componentDidMount() {
         const gameId = useLoaderData();
-        console.log("MOUNT");
+        debug.log("MOUNT");
 
         ws = new WebSocket("ws://127.0.0.1:3000");
 
@@ -28,13 +30,13 @@ class GameClass {
         ws.onmessage = messageHandler;
         ws.onclose = closeHandler;
         function openHandler(e) {
-            console.log("open: ", e);
+            debug.log("open: ", e);
             const data = { "type": "join", "data": gameId };
             ws.send(JSON.stringify(data));
         }
 
         function messageHandler(e) {
-            console.log("message: ", e.data);
+            debug.log("message: ", e.data);
             let msg = JSON.parse(e.data);
             if (msg.type === "granted") {
                 if (msg.data === true) {
@@ -46,18 +48,18 @@ class GameClass {
         }
 
         function closeHandler(e) {
-            console.log("close: ", e);
+            debug.log("close: ", e);
         }
     }
 
     componentDidUpdate() {
-        console.log("UPDATE");
+        debug.log("UPDATE");
     }
 
     componentWillUnmount() {
-        console.log("CLEANUP");
+        debug.log("CLEANUP");
         if (ws) {
-            console.log("ws exists, so closing");
+            debug.log("ws exists, so closing");
             ws.close();
             ws = null;
         }

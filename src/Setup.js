@@ -2,6 +2,8 @@ import NameForm from './NameForm';
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import debug from "./debugLogger.js";
 import config from "./config.js";
 
 function Setup() {
@@ -44,19 +46,19 @@ async function nameChanged(name) {
             })
             .then(res => res.json())
             .then( res => {
-                console.log(res);
+                debug.log(res);
                 return res;
             })
             .then(
                 async (result) => {
                     // load a new page
-                    console.log();
+                    debug.log();
                     await localStorage.setItem('isSetup', true);
                     window.location.reload(false);
                 },
                 (error) => {
-                    console.log("There was an error")
-                    console.log(error)
+                    debug.log("There was an error")
+                    debug.log(error)
                 }
             )
             .catch((error) => {

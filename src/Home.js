@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import JoinForm from './JoinForm';
 
 import config from './config';
+import debug from './debugLogger.js';
 
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
@@ -39,7 +40,7 @@ function Home() {
     }
 
     function createLobby() {
-        console.log("create a new lobby")
+        debug.log("create a new lobby")
 
         let body = {};
 
@@ -62,17 +63,17 @@ function Home() {
             .then(res => res.json())
             //.then(res => res.text())
             .then( res => {
-                console.log(res);
+                debug.log(res);
                 return res;
             })
             .then(
                 (result) => {
-                    console.log(result)
+                    debug.log(result)
                     navigate("/" + result.id);
                 },
                 (error) => {
-                    console.log("There was an error")
-                    console.log(error)
+                    debug.log("There was an error")
+                    debug.log(error)
                 }
             )
             .catch((error) => {

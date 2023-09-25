@@ -1,7 +1,9 @@
+import debug from "./debugLogger.js";
+
 class SocketConnection {
     constructor(host, lifecycle) {
         //this.id = Math.floor(Math.random()*1000);
-        //console.log("constructor", this.id);
+        //debug.log("constructor", this.id);
         this.sessionId = undefined;
         this.host = host;
         this.userLifecycle = lifecycle;
@@ -20,13 +22,13 @@ class SocketConnection {
 
     identify() {
         if (this.sessionId) {
-            console.log("session id:", this.sessionId);
+            debug.log("session id:", this.sessionId);
             this._send({
                 type: "connection/sessionId",
                 data: { sessionId: this.sessionId }
             });
         } else {
-            console.log("no session id");
+            debug.log("no session id");
             this._send({
                 type: "connection/sessionId",
             });
@@ -38,7 +40,7 @@ class SocketConnection {
     }
 
     setup() {
-        console.log("setup", this.id);
+        debug.log("setup", this.id);
         if (this.ws !== null) {
             console.error("double connecting a WS");
             return;
@@ -52,7 +54,7 @@ class SocketConnection {
     }
 
     destroy() {
-        //console.log("destroy", this.id);
+        //debug.log("destroy", this.id);
         this.ws.onerror = this.destroyed.bind(this);
         this.ws.onmessage = this.destroyed.bind(this);
         this.ws.onclose = this.destroyed.bind(this);
@@ -60,16 +62,16 @@ class SocketConnection {
     }
 
     testBreak() {
-        console.log("testing a broken connectikon");
+        debug.log("testing a broken connectikon");
         this.ws.close();
     }
 
     destroyed(e) {
-        console.log("destroyed", this.id);
+        debug.log("destroyed", this.id);
     }
 
     onOpen(e) {
-        console.log("onOpen -- sessionId:", this.sessionId);
+        debug.log("onOpen -- sessionId:", this.sessionId);
         this._send({
             type: "session/establish",
             sessionId: this.sessionId,
@@ -77,7 +79,7 @@ class SocketConnection {
     }
 
     onUnauthenticated(e) {
-        console.log("you should authenticate");
+        debug.log("you should authenticate");
         // if you got here then you dont have a user name
 
         // clear and rerun the workflow for a new user.
@@ -96,21 +98,21 @@ class SocketConnection {
             return;
         }
 
-        console.log("onSession==msg:", serverMessage);
+        debug.log("onSession==msg:", serverMessage);
         this.sessionId = serverMessage?.data?.sessionId;
-        console.log("onSession", this.sessionId);
+        debug.log("onSession", this.sessionId);
 
         this.retryInterval = 1000;
 
         for (const msg of this.msgQueue) {
-            console.log("delayed message:", msg);
+            debug.log("delayed message:", msg);
             this._send(msg);
         }
         this.msgQueue.length = 0;
 
         this.userLifecycle.onOpen(e);
 
-        console.log("switch message handler");
+        debug.log("switch message handler");
         this.ws.onmessage = this.onMessage.bind(this);
     }
 
@@ -119,16 +121,16 @@ class SocketConnection {
     }
 
     onClose(e) {
-        console.log("onClose", this.id);
+        debug.log("onClose", this.id);
         console.dir("onClose", this.id);
         this.userLifecycle.onClose(e);
 
         this.ws = null;
 
         // setup the reconnection
-        //console.log("keepAlive:", this.keepAlive);
+        //debug.log("keepAlive:", this.keepAlive);
         if (this.keepAlive) {
-            console.log("setting up a new connection in:", this.retryInterval, this.ws);
+            debug.log("setting up a new connection in:", this.retryInterval, this.ws);
             this.reconnectTimer = setTimeout(this.setup.bind(this), this.retryInterval);
             this.retryInterval = Math.min(10000, 2*this.retryInterval);
         }
@@ -144,11 +146,11 @@ class SocketConnection {
     }
 
     send(msg) {
-        //console.log("send", this.id);
+        //debug.log("send", this.id);
         if (this.ws && this.ws.readyState === this.ws.OPEN) {
             this._send(msg);
         } else {
-            //console.log("saving for later");
+            //debug.log("saving for later");
             this.msgQueue.push(msg);
         }
     }
@@ -156,7 +158,7 @@ class SocketConnection {
     join(gameId) {
         this.gameId = gameId;
 
-        console.log("join called:", gameId);
+        debug.log("join called:", gameId);
 
         if (this.ws && this.ws.readyState === this.ws.OPEN) {
             this._send({
@@ -176,12 +178,12 @@ class SocketConnection {
     }
 
     close() {
-        //console.log("close", this.id);
+        //debug.log("close", this.id);
         this.destroy();
 
         clearInterval(this.retryInterval);
         this.keepAlive = false;
-        //console.log("reconnect turned off");
+        //debug.log("reconnect turned off");
 
         if (this.ws === null) {
             // do nothing
@@ -193,7 +195,7 @@ class SocketConnection {
 
         // the msg queue is lost
         this.msgQueue.length = 0;
-        //console.log(this.ws.readyState);
+        //debug.log(this.ws.readyState);
         this.ws.close();
 
         this.ws = null;
@@ -203,7 +205,7 @@ class SocketConnection {
     }
 
     myOnOpen() {
-        //console.log("myOnOpen", this.id);
+        //debug.log("myOnOpen", this.id);
         for (const msg of this.msgQueue) {
             this._send(msg);
         }

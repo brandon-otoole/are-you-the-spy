@@ -1,3 +1,7 @@
+'use strict'
+
+import debug from "./debugLogger.js";
+
 const reducer = (state, action) => {
     switch (action.type) {
         case 'SET_GAME_ID':
@@ -10,7 +14,7 @@ const reducer = (state, action) => {
             };
 
         case 'join/grant':
-            console.log("join grant");
+            debug.log("join grant");
             return {
                 ...state,
                 game: {
@@ -74,7 +78,7 @@ const reducer = (state, action) => {
             };
 
         case 'game/eliminatePlayer':
-            console.log("MESSAGE STUB: ", "game/eliminatePlayer");
+            debug.log("MESSAGE STUB: ", "game/eliminatePlayer");
             return {
                 ...state,
             };
@@ -83,7 +87,7 @@ const reducer = (state, action) => {
             if (action.type.slice(0, 8) === "@@redux/") {
                 // do nothing
             } else {
-                console.log("missed message:", action);
+                debug.log("missed message:", action);
             }
 
             return {
