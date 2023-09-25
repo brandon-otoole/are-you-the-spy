@@ -16,9 +16,7 @@ import WSMiddleware from './WSMiddleware';
 import LoggerMiddleware from './LoggerMiddleware';
 
 import App from './App';
-import Join from './Join';
 import Game from './Game';
-import New from './New';
 import Home from './Home';
 import Setup from './Setup';
 
@@ -52,29 +50,12 @@ const router = createBrowserRouter([
             {
                 path: "",
                 element: <Home />,
-            },
-            {
+            }, {
                 path: "/:gameId",
                 element:
                     <RequireAuth>
                       <Game />
                     </RequireAuth>
-            },
-            {
-                path: "join",
-                element: <Join />,
-            },
-            {
-                path: "gamer/:gameId",
-                element:
-                    <RequireAuth>
-                      <Game />
-                    </RequireAuth>
-                ,
-            },
-            {
-                path: "new",
-                element: <New />,
             }, {
                 path: "setup",
                 element: <Setup />,
