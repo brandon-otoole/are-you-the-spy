@@ -20,8 +20,8 @@
         "redux": "^4.2.1"
     },
     "scripts": {
-        "setup": "npm run build; gnoDeploy setup spy-indieraydev-com spy-game dist 18.14.0",
-        "deploy": "npm run build; gnoDeploy deploy spy-indieraydev-com spy-game dist 18.14.0",
+        "setup": "npm run build; gnoDeploy setup spy-indieraydev-com spy-game dist 18.18.0",
+        "deploy": "npm run build; gnoDeploy deploy spy-indieraydev-com spy-game dist 18.18.0",
         "start": "cp -a config.ui.development.js src/config.js; PORT=8080 react-scripts start",
         "serve": "PORT=3000 node srv/index.js",
         "config": "npm run config-ui; npm run config-app;",
