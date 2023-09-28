@@ -5,7 +5,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-      <Link to="/" style={{ color: '#FFF', textDecoration: 'none' }}>Who Is The Spy?</Link>
+      <Link to="/" style={{ color: '#FFF', textDecoration: 'none' }}>Are You The Spy?</Link>
       </header>
       <div>
         <Outlet />

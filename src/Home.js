@@ -20,7 +20,7 @@ function Home() {
           <Card variant="outlined">
             <CardContent>
               <div>
-                <h2>Come play "Who Is the Spy?"</h2>
+                <h2>Come play "Are You The Spy?"</h2>
                 <JoinForm id={ id } updateId={setId} />
               </div>
               <div>
