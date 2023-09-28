@@ -45,9 +45,6 @@ function InGame(props) {
               <div>
                 <h2>Game in progress</h2>
               </div>
-              <div>
-                <h4>Are you the spy?</h4>
-              </div>
 
               Players
               <div align="center">
