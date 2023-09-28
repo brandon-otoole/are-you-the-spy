@@ -20,14 +20,14 @@
         "redux": "^4.2.1"
     },
     "scripts": {
-        "setup": "npm run build; gnoDeploy setup spy-indieraydev-com spy-game dist 18.18.0",
-        "deploy": "npm run build; gnoDeploy deploy spy-indieraydev-com spy-game dist 18.18.0",
+        "setup": "npm run build; gnoDeploy setup www-areyouthespy-com spy-game dist 18.18.0",
+        "deploy": "npm run build; gnoDeploy deploy www-areyouthespy-com spy-game dist 18.18.0",
         "start": "cp -a config.ui.development.js src/config.js; PORT=8080 react-scripts start",
         "serve": "PORT=3000 node srv/index.js",
         "config": "npm run config-ui; npm run config-app;",
         "config-app": "cp -a config.app.production.js srv/config.js; ",
         "config-ui": "cp -a config.ui.production.js src/config.js; ",
-        "build": "npm run config; rm -r dist; mkdir dist/; npm run build-ui; npm run build-app; cp -a spy-indieraydev-com.* dist/;",
+        "build": "npm run config; rm -r dist; mkdir dist/; npm run build-ui; npm run build-app; cp -a www-areyouthespy-com.* dist/;",
         "build-app": "cp -a srv/ dist/app/;",
         "build-ui": "react-scripts build; cp -a build/ dist/ui/;",
         "test": "react-scripts test",
