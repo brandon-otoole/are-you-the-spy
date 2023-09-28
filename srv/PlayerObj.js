@@ -8,6 +8,9 @@ class PlayerObj {
 
         // the players ready state
         this.ready = false;
+
+        // the players role/secret
+        this.role = "pending";
     }
 }
 

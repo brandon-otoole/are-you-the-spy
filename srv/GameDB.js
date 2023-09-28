@@ -89,7 +89,7 @@ class GameDB {
 
         let data = {
             myPlayerId: player.id,
-            role: 'server static',
+            role: player.role,
             state: game.state(),
             started: game.isStarted(),
         }

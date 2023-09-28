@@ -50,6 +50,7 @@ class GameObj {
         return Object.values(this.players).filter(p => p.ready).length;
     }
 
+    /*
     removeUser(userId) {
         // look up the player from the user
         let playerId = this.userToPlayer[userId];
@@ -63,6 +64,7 @@ class GameObj {
             // TODO: send a message to the sockets that they have been unjoined
         }
     }
+    */
 
     addSession(sessionId, name) {
         let userId = SessionStore.getUser(sessionId);
@@ -74,17 +76,14 @@ class GameObj {
         this.userToSessions[userId] = this.userToSessions[userId] || [];
         this.userToSessions[userId].push(sessionId);
 
-        // check to see if this user is already a player
-        //return this.userToPlayer[userId] || this.addPlayer(userId, name);
-
-        if (userId in this.userToPlayer) {
-            let playerId = this.userToPlayer[userId];
-            return this.players[playerId];
-        } else {
-            return this.addPlayer(userId, name)
+        if (!(userId in this.userToPlayer)) {
+            // add the player to the user map
+            this.addPlayer(userId, name);
         }
 
-        return player;
+        let playerId = this.userToPlayer[userId];
+
+        return this.players[playerId];
     }
 
     addPlayer(userId, name) {
@@ -177,9 +176,25 @@ class GameObj {
         this.theSpy = characterIds[theSpy];
 
         // update the private player info
+        for (const player of Object.values(this.players)) {
+            if (player.id == this.theSpy) {
+                player.role = this.players[this.theOne].name;
+            } else {
+                player.role = this.players[this.theOther].name;
+            }
+        }
 
         // let players know a game has started
-        this.broadcast('game/start', { role: 'pending' });
+        let type = 'game/start';
+        for (const [userId, playerId] of Object.entries(this.userToPlayer)) {
+            let player = this.players[playerId];
+            for (let sessionId of this.userToSessions[userId]) {
+                SessionStore.send(sessionId, 'game/start', {role: player.role});
+            }
+        }
+
+        for (const id of Object.keys(this.sessions)) {
+        }
     }
 
     requestSecret(userId, sessionId) {
