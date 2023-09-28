@@ -12,11 +12,11 @@ function Setup() {
 
   return (
     <div className="App">
-      <header className="App-headerr">
+      <header>
         Please Enter your name
       </header>
       <div className="App-body">
-          <NameForm name={name} updateName={setName} />
+          <NameForm name={name} updateName={setName} submitHandler={ () => nameChanged(name) }/>
       </div>
 
       <button onClick={ () => nameChanged(name) }>
@@ -35,7 +35,6 @@ async function nameChanged(name) {
             body: JSON.stringify({}),
         };
 
-        //fetch("http://spygame.lan/api/login", options)
         fetch(config.httpUrl + "/api/login", options)
             .then((res) => {
                 if (!res.ok) {
