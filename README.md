@@ -1,12 +1,12 @@
-# Who Is The Spy
-https://spy.indieraydev.com
+# Are You The Spy?
+https://www.areyouthespy.com
 
-Playing Who Is The Spy is as close to being a real spy as you ever want. Each round will have your heart pumping and your mind racing as you try to figure out, who is the spy? The catch is that it might just be you.
+Playing Are You The Spy is as close to being a real spy as you ever want to be. Each round will have your heart pumping and your mind racing as you try to figure out, are you the spy? The catch is that it might just be you.
 
 > Note: This game is a work in progress. Since it started as a react and websocket proof of concept, not all functionality has been implemented yet.
 
 ## Inspiration
-Who Is The Spy was a very popular game in China and resembles the desktop game, Spyfall (created by Alexandr Ushan). The game has even been used as a way to help foreign language students develop their vocabulary and basic conversational skills.
+Are You The Spy is inspired by a very popular game in China and resembles the desktop game, Spyfall (created by Alexandr Ushan). The game has even been used as a way to help foreign language students develop their vocabulary and basic conversational skills.
 
 This app aims to facilitate the setup and gameplay so that groups do not need to designate a moderator.
 
@@ -20,13 +20,13 @@ The player with the mismatched word is the spy, and must avoid detection or unco
 The other players must try to deduce who is the spy without letting them learn the.
 
 ### Setup
-One player will need to create a room by visiting [spy.indieraydev.com](https://spy.indieraydev.com). Once the room is created, the creator will be redirected to the room at
+One player will need to create a room by visiting [www.areyouthespy.com](https://www.areyouthespy.com). Once the room is created, the creator will be redirected to the room at
 
-> `https://spy.indieraydev.com/[room-code]`
+> `https://www.areyouthespy.com/[room-code]`
 
 The new room url can be shared with the other players, or they can enter the `[room-code]` on the main page.
 
-If it is your first time visiting [spy.indieraydev.com](https://spy.indieraydev.com), you will be asked to register by entering your name. This is necessary so that the other players can identify who has joined the game, who they are voting against, and can help keep track of who has been eliminated in each round.
+If it is your first time visiting [www.areyouthespy.com](https://www.areyouthespy.com), you will be asked to register by entering your name. This is necessary so that the other players can identify who has joined the game, who they are voting against, and can help keep track of who has been eliminated in each round.
 
 Before the game begins, everyone who wishes to play must mark themselves "ready".
 
