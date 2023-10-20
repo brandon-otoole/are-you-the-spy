@@ -19,6 +19,12 @@
         "react-scripts": "^5.0.1",
         "redux": "^4.2.1"
     },
+    "overrides": {
+        "react-scripts": {
+            "@svgr/webpack": "8.1.0",
+            "typescript": "5.0.2"
+        }
+    },
     "scripts": {
         "setup": "npm run build; gnoDeploy setup www-areyouthespy-com spy-game dist 18.18.0",
         "deploy": "npm run build; gnoDeploy deploy www-areyouthespy-com spy-game dist 18.18.0",
