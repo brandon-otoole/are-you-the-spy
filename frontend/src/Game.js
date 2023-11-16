@@ -1,5 +1,3 @@
-import config from "./config.js";
-
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux'
@@ -18,7 +16,7 @@ function Game(props) {
     const { game, wsConnect, wsMessage, wsDisconnect } = props;
 
     useEffect(() => {
-        wsConnect(config.socketUrl + "/ws");
+        wsConnect("SOCKET_URL_PLACEHOLDER/ws");
         wsMessage({
             type: "join",
             data: {

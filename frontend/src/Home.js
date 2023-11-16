@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import JoinForm from './JoinForm';
 
-import config from './config';
 import debug from './debugLogger.js';
 
 import Button from "@mui/material/Button";
@@ -10,17 +9,27 @@ import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
+import Paper from "@mui/material/Paper";
 
 function Home() {
     const [ id, setId ] = useState("");
     const navigate = useNavigate();
 
     return (
-        <Box sx={{ minWidth: 275 }}>
+        <Box sx={{ minWidth: 275, maxWidth: 700, padding: "10px" }} display="inline-block">
           <Card variant="outlined">
             <CardContent>
               <div>
-                <h2>Come play "Are You The Spy?"</h2>
+        <p>
+                "Are You The Spy" is a game of social deduction. You can play with 
+        as little as 3 people, but it is recommened that you play with at least
+        5 people.
+
+        </p>
+
+        <p>
+        If you have been given a game code, enter it below to join an existing game. Or if you are just getting started, create a game so that others can play.
+        </p>
                 <JoinForm id={ id } updateId={setId} />
               </div>
               <div>
@@ -52,7 +61,7 @@ function Home() {
             body: JSON.stringify(body),
         };
 
-        fetch(config.httpUrl + "/api/game", options)
+        fetch("HTTP_URL_PLACEHOLDER/api/game", options)
             .then((res) => {
                 if (!res.ok) {
                     throw new Error('Network response was not OK');

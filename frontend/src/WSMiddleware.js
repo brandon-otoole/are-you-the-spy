@@ -1,5 +1,3 @@
-import config from "./config.js";
-
 import * as Actions from "./Actions.js";
 import SocketConnection from "./SocketConnection.js";
 

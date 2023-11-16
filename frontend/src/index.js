@@ -4,7 +4,6 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 
 import reducer from "./reducer.js";
-import config from "./config.js";
 
 import {
     createBrowserRouter,
@@ -24,7 +23,8 @@ import Setup from './Setup';
 import ErrorPage from './ErrorPage';
 
 const middleware = []
-if (config.debug) {
+const DEBUG_TEST = ["DEBUG", "TRUE"].join('_');
+if (DEBUG_TEST == "DEBUG_PLACEHOLDER") {
     middleware.push(LoggerMiddleware);
 }
 middleware.push(WSMiddleware);

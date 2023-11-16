@@ -44,6 +44,17 @@ export default function HttpServer() {
         res.json({ join: true });
     });
 
+    /*
+    expressApp.get('*', (req, res) => {
+        //let id = GameDB.create();
+        const id = 12345;
+
+        console.log("create a new game: ", id);
+
+        res.json({ id: id });
+    });
+    */
+
     expressApp.post('/game', (req, res) => {
         let id = GameDB.create();
         console.log("create a new game: ", id);
@@ -52,7 +63,7 @@ export default function HttpServer() {
     });
 
     const server = createServer(expressApp);
-    server.listen(process.env.PORT || 3000, '127.0.0.1',  () => {
+    server.listen(process.env.PORT || 3000, "0.0.0.0", () => {
         let host = server.address().address;
         let port = server.address().port;
 

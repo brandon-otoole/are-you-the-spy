@@ -1,7 +1,7 @@
-import config from "./config.js";
+const DEBUG_TEST = ["DEBUG", "TRUE"].join('_');
 
 function getLogger() {
-    if (config.debug) {
+    if (DEBUG_TEST == "DEBUG_PLACEHOLDER") {
         return function(text) {
             console.debug(text);
         }

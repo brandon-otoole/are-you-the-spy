@@ -1,18 +1,18 @@
 'use strict';
 
-import config from "./config.js";
 import GameDB from "./GameDB.js"
 
 import HttpServer from "./HttpServer.js";
 import SocketServer from "./SocketServer.js";
 
-process.on('SIGINT', async function() {
-    console.log("WE ARE GOING DOWN!!!");
-
+async function cleanUp() {
+    console.log('shutting down...');
     await GameDB.close();
+    process.exit()
+}
 
-    process.exit();
-});
+process.on('SIGTERM', cleanUp);
+process.on('SIGINT', cleanUp);
 
 //console.log(GameDB.create());
 

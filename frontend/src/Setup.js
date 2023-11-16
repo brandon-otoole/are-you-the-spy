@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import debug from "./debugLogger.js";
-import config from "./config.js";
 
 function Setup() {
     const [ name, setName ] = useState("");
@@ -35,7 +34,7 @@ async function nameChanged(name) {
             body: JSON.stringify({}),
         };
 
-        fetch(config.httpUrl + "/api/login", options)
+        fetch("HTTP_URL_PLACEHOLDER/api/login", options)
             .then((res) => {
                 if (!res.ok) {
                     throw new Error('Network response was not OK');
