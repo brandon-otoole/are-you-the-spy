@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux'
-//import { increment, decrement, reset } from './actions';
 
 //import SocketConnection from "./SocketConnection.js";
 import * as Actions from "./Actions.js";
