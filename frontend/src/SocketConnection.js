@@ -1,11 +1,22 @@
 import debug from "./debugLogger.js";
 
+function getSocketUrl(socketPath) {
+    const loc = window.location;
+    let uri = (loc.protocol === "https:") ? "wss:" : "ws:";
+
+    uri += "//" + loc.host + socketPath;
+
+    console.log(uri);
+
+    return uri
+}
+
 class SocketConnection {
-    constructor(host, lifecycle) {
+    constructor(socketPath, lifecycle) {
         //this.id = Math.floor(Math.random()*1000);
         //debug.log("constructor", this.id);
         this.sessionId = undefined;
-        this.host = host;
+        this.host = getSocketUrl(socketPath);
         this.userLifecycle = lifecycle;
         this.msgQueue = [];
 

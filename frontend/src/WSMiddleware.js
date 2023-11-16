@@ -31,7 +31,7 @@ const WSMiddleware = () => {
         switch (action.type) {
             case 'WS_CONNECT':
                 // create a websocket wrapper
-                connection = new SocketConnection(action.host, wsLifecycle(store));
+                connection = new SocketConnection(action.socketPath, wsLifecycle(store));
                 break;
 
             case 'WS_CONNECTED':

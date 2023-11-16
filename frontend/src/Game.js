@@ -15,7 +15,7 @@ function Game(props) {
     const { game, wsConnect, wsMessage, wsDisconnect } = props;
 
     useEffect(() => {
-        wsConnect("SOCKET_URL_PLACEHOLDER/ws");
+        wsConnect("/ws");
         wsMessage({
             type: "join",
             data: {
@@ -45,7 +45,7 @@ const S2P = (state) => {
 const D2P = (dispatch) => {
    return {
        //handleMessage: (msg) => dispatch(msg),
-       wsConnect: (host, gameId) => dispatch(Actions.wsConnect(host, gameId)),
+       wsConnect: (socketPath, gameId) => dispatch(Actions.wsConnect(socketPath, gameId)),
        wsMessage: (msg) => dispatch(Actions.wsMessage(msg)),
        wsDisconnect: () => dispatch(Actions.wsDisconnect()),
    };
