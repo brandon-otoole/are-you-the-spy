@@ -34,7 +34,7 @@ async function nameChanged(name) {
             body: JSON.stringify({}),
         };
 
-        fetch("HTTP_URL_PLACEHOLDER/api/login", options)
+        fetch("/api/login", options)
             .then((res) => {
                 if (!res.ok) {
                     throw new Error('Network response was not OK');

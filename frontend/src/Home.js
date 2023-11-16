@@ -61,7 +61,7 @@ function Home() {
             body: JSON.stringify(body),
         };
 
-        fetch("HTTP_URL_PLACEHOLDER/api/game", options)
+        fetch("/api/game", options)
             .then((res) => {
                 if (!res.ok) {
                     throw new Error('Network response was not OK');
