@@ -1,0 +1,15 @@
+services:
+  frontend:
+    build: frontend/
+    image: ghcr.io/brandon-otoole/are-you-the-spy-frontend
+    environment:
+      - DEBUG=DEBUG_TRUE
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+  backend:
+    build: backend/
+    image: ghcr.io/brandon-otoole/are-you-the-spy-backend
+    environment:
+      - PORT=3000
