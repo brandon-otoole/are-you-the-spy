@@ -28,9 +28,7 @@
         }
     },
     "scripts": {
-        "start": "docker compose build; docker compose up;",
-        "setup": "npm run build; gnoDeploy setup www-areyouthespy-com spy-game dist 18.18.0",
-        "deploy": "npm run build; gnoDeploy deploy www-areyouthespy-com spy-game dist 18.18.0",
+        "start": "PORT=8080 react-scripts start",
         "build": "react-scripts build"
     },
     "eslintConfig": {

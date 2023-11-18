@@ -1,4 +1,4 @@
-import game_records from "./game_records.js"
+//import game_records from "./game_records.js"
 import crypto from "crypto"
 
 import GameObj from "./GameObj.js"
@@ -19,9 +19,9 @@ class GameDB {
         // value: game object
         this.games = {};
         // TODO: we need to find a better way to load in the game data
-        for (const [id, game] of Object.entries(game_records)) {
-            this.games[id] = GameObj.factory(game);
-        }
+        //for (const [id, game] of Object.entries(game_records)) {
+        //    this.games[id] = GameObj.factory(game);
+        //}
 
         // a session is strictly tied to one game
         this.sessionToGame = {};
@@ -60,7 +60,8 @@ class GameDB {
 
         // TODO: delete all session inormation and close all sockets
 
-        await fsPromises.writeFile("./game_records.js", data);
+        // TODO: no longer using game records. fix this with redis instead
+        //await fsPromises.writeFile("./game_records.js", data);
     }
 
     sendToGame(gameId, msg) {
