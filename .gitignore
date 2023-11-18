@@ -15,6 +15,7 @@
 /dist
 
 # config files
+compose.yaml
 **config.js
 config.*.js
 *.conf
