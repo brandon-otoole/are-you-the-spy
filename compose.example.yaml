@@ -1,6 +1,6 @@
 services:
   proxy:
-    image: ghcr.io/brandon-otoole/are-you-the-spy-proxy
+    image: dev/are-you-the-spy-proxy
     build: ./proxy
     depends_on:
       - backend
@@ -9,7 +9,7 @@ services:
       - "8000:80"
 
   frontend:
-    image: ghcr.io/brandon-otoole/are-you-the-spy-frontend
+    image: dev/are-you-the-spy-frontend
     build:
       context: ./frontend
       target: development
@@ -19,7 +19,7 @@ services:
       - "8080:8080"
 
   backend:
-    image: ghcr.io/brandon-otoole/are-you-the-spy-backend
+    image: dev/are-you-the-spy-backend
     build:
       context: ./backend
       target: development
